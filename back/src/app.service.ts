@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class MyService {
@@ -24,7 +25,7 @@ export class KakaoLogin {
     this.refreshToken = '';
   }
   async login(url: string, headers: any): Promise<any> {
-    return await this.httpService.post(url, '', { headers }).toPromise();
+    return await firstValueFrom(this.httpService.post(url, '', { headers }));
   }
   setToken(accesstoken: string, refreshtoken:string): boolean {
     this.accessToken = accesstoken;
@@ -36,14 +37,14 @@ export class KakaoLogin {
     const _header = {
       Authorization: `bearer ${this.accessToken}`,
     };
-    return await this.httpService.post(_url, '', { headers: _header }).toPromise(); // 동기
+    return await firstValueFrom(this.httpService.post(_url, '', { headers: _header }));
   }
   async deleteLog(): Promise<any> {
     const _url = 'https://kapi.kakao.com/v1/user/unlink';
     const _header = {
       Authorization: `bearer ${this.accessToken}`,
     };
-    return await this.httpService.post(_url, '', { headers: _header }).toPromise();
+    return await firstValueFrom(this.httpService.post(_url, '', { headers: _header }));
   }
 
   async info(): Promise<any> {
@@ -51,7 +52,7 @@ export class KakaoLogin {
     const _header = {
       Authorization: `bearer ${this.accessToken}`,
     };
-    const info = await this.httpService.post(_host, '', {headers:_header}).toPromise();
+    const info = await firstValueFrom(this.httpService.post(_host, '', {headers:_header}));
     const nickname = info.data.kakao_account.profile.nickname;
     const email = info.data.kakao_account.email;
     const age_range = info.data.kakao_account.age_range;
@@ -71,9 +72,9 @@ export class KakaoLogin {
     const _header = {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
-    const refresh = await this.httpService.post(_url, '', {params ,headers: _header}).toPromise();
-    console.log(refresh);
-    return refresh.data.access_token;
+    const refresh = await firstValueFrom(this.httpService.post(_url, '', {params ,headers: _header}));
+    console.log(refresh.data);
+    return refresh.data;
   }
 
 }
