@@ -1,7 +1,10 @@
+/**
+ * app.controller.ts는 기능 테스트하기 위해 작성됨
+ */
+
 import {
   Controller,
   Get,
-  Param,
   Header,
   Redirect,
   Post,
@@ -113,7 +116,10 @@ export class AppController {
       .then((e) => {
         console.log(e.data['access_token'], e.data['refresh_token']);
         console.log(`TOKEN : ${e.data['access_token']}`);
-        this.kakaoLogin.setToken(e.data['access_token'], e.data['refresh_token']);
+        this.kakaoLogin.setToken(
+          e.data['access_token'],
+          e.data['refresh_token'],
+        );
         return res.send(`
           <div>
             <h2>축하합니다!</h2>
@@ -146,7 +152,7 @@ export class AppController {
         console.log(e);
         return res.send('DELETE ERROR');
       });
-  
+
     // // 로그아웃 -(2) 토큰 만료
     // this.kakaoLogin
     //   .logout()
@@ -164,13 +170,11 @@ export class AppController {
     //   });
   }
 
-
   @Post('kakaoinfo')
-    kakaoinfo() {
-      console.log(this.kakaoLogin.accessToken, "11");
-      return this.kakaoLogin.info();
-    }
-
+  kakaoinfo() {
+    console.log(this.kakaoLogin.accessToken, '11');
+    return this.kakaoLogin.info();
+  }
 
   @Post('refresh')
   refresh() {

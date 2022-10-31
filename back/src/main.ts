@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
@@ -5,9 +6,10 @@ declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const port = 3000;
-  await app.listen(port);
-  console.log(`listening on port ${port} `);
+  const configService = app.get<ConfigService>(ConfigService);
+
+  await app.listen(configService.get('PORT'));
+  console.log(`listening on port ${configService.get('PORT')} `);
 
   if (module.hot) {
     module.hot.accept();
