@@ -20,14 +20,14 @@ export class MyService {
 export class KakaoLogin {
   accessToken: string;
   refreshToken: string;
-  constructor(private httpService:HttpService) {
+  constructor(private httpService: HttpService) {
     this.accessToken = '';
     this.refreshToken = '';
   }
   async login(url: string, headers: any): Promise<any> {
     return await firstValueFrom(this.httpService.post(url, '', { headers }));
   }
-  setToken(accesstoken: string, refreshtoken:string): boolean {
+  setToken(accesstoken: string, refreshtoken: string): boolean {
     this.accessToken = accesstoken;
     this.refreshToken = refreshtoken;
     return;
@@ -37,14 +37,18 @@ export class KakaoLogin {
     const _header = {
       Authorization: `bearer ${this.accessToken}`,
     };
-    return await firstValueFrom(this.httpService.post(_url, '', { headers: _header }));
+    return await firstValueFrom(
+      this.httpService.post(_url, '', { headers: _header }),
+    );
   }
   async deleteLog(): Promise<any> {
     const _url = 'https://kapi.kakao.com/v1/user/unlink';
     const _header = {
       Authorization: `bearer ${this.accessToken}`,
     };
-    return await firstValueFrom(this.httpService.post(_url, '', { headers: _header }));
+    return await firstValueFrom(
+      this.httpService.post(_url, '', { headers: _header }),
+    );
   }
 
   async info(): Promise<any> {
@@ -52,7 +56,9 @@ export class KakaoLogin {
     const _header = {
       Authorization: `bearer ${this.accessToken}`,
     };
-    const info = await firstValueFrom(this.httpService.post(_host, '', {headers:_header}));
+    const info = await firstValueFrom(
+      this.httpService.post(_host, '', { headers: _header }),
+    );
     const nickname = info.data.kakao_account.profile.nickname;
     const email = info.data.kakao_account.email;
     const age_range = info.data.kakao_account.age_range;
@@ -64,17 +70,20 @@ export class KakaoLogin {
 
   async refresh(): Promise<any> {
     const _url = 'https://kauth.kakao.com/oauth/token';
+    console.log(this.refreshToken);
     const params = {
       grant_type: 'refresh_token',
       client_id: '277d6ee95ddddc6d1dbeb6091c263351',
       refresh_token: this.refreshToken,
+      client_secret: 'IdfBw8PeKK0yStQ1Hzbm1ifHdPIJfyVk',
     };
     const _header = {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
-    const refresh = await firstValueFrom(this.httpService.post(_url, '', {params ,headers: _header}));
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+    const refresh = await firstValueFrom(
+      this.httpService.post(_url, '', { params, headers: _header }),
+    );
     console.log(refresh.data);
     return refresh.data;
   }
-
 }

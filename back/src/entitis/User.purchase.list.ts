@@ -22,30 +22,6 @@ export class UserPurchaseList {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @IsNumber()
-  @ApiProperty({
-    example: '1',
-    description: '유저 아이디',
-  })
-  @Column({
-    type: 'int',
-    name: 'user_id',
-    nullable: true,
-  })
-  userId: number;
-
-  @IsNumber()
-  @ApiProperty({
-    example: '1',
-    description: '상품 아이디',
-  })
-  @Column({
-    type: 'int',
-    name: 'product_id',
-    nullable: true,
-  })
-  productId: number;
-
   @IsNotEmpty()
   @IsNumber()
   @ApiProperty({
@@ -64,14 +40,14 @@ export class UserPurchaseList {
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'product_id', referencedColumnName: 'id' }])
-  ProductId: Product;
+  productId: Product;
 
   @ManyToOne(() => User, (user) => user.userPurchaseList, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
-  UserId: User;
+  userId: User;
 
   @OneToMany(() => UserSendList, (userSendList) => userSendList.purchaseListId)
   userSendList: UserSendList;

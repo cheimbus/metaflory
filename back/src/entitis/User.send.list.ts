@@ -33,48 +33,6 @@ export class UserSendList {
 
   @IsNotEmpty()
   @IsNumber()
-  @ApiProperty({
-    example: '1',
-    description: '유저 아이디',
-    required: true,
-  })
-  @Column({
-    type: 'int',
-    name: 'user_id',
-    nullable: true,
-  })
-  userId: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @ApiProperty({
-    example: '1',
-    description: '라운지 아이디 라운지를 보낼 때 사용',
-    required: true,
-  })
-  @Column({
-    type: 'int',
-    name: 'rounge_id',
-    nullable: true,
-  })
-  roungeId: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @ApiProperty({
-    example: '1',
-    description: '구매 목록 아이디 꽃 구매하고나서 보낼 때 사용',
-    required: true,
-  })
-  @Column({
-    type: 'int',
-    name: 'purchase_list_id',
-    nullable: true,
-  })
-  purchaseListId: number;
-
-  @IsNotEmpty()
-  @IsNumber()
   @Min(0)
   @Max(3)
   @ApiProperty({
@@ -173,7 +131,7 @@ export class UserSendList {
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
-  UserId: User;
+  userId: User;
 
   @ManyToOne(
     () => UserPurchaseList,
@@ -184,12 +142,12 @@ export class UserSendList {
     },
   )
   @JoinColumn([{ name: 'purchase_list_id', referencedColumnName: 'id' }])
-  PurchaseListId: UserPurchaseList;
+  purchaseListId: UserPurchaseList;
 
   @ManyToOne(() => UserRounge, (userRounge) => userRounge.userSendList, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'rounge_id', referencedColumnName: 'id' }])
-  RoungeId: UserRounge;
+  roungeId: UserRounge;
 }

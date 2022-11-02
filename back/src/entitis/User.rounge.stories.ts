@@ -3,7 +3,6 @@ import {
   IsBoolean,
   IsDate,
   IsNotEmpty,
-  IsNumber,
   IsString,
   MaxLength,
   MinLength,
@@ -30,48 +29,6 @@ export class UserRoungeStory {
   })
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @ApiProperty({
-    example: '1',
-    description: '유저 아이디',
-    required: true,
-  })
-  @Column({
-    type: 'int',
-    name: 'user_id',
-    nullable: true,
-  })
-  userId: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @ApiProperty({
-    example: '1',
-    description: '라운지 아이디',
-    required: true,
-  })
-  @Column({
-    type: 'int',
-    name: 'rounge_id',
-    nullable: true,
-  })
-  roungeId: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @ApiProperty({
-    example: '1',
-    description: '상품 아이디',
-    required: true,
-  })
-  @Column({
-    type: 'int',
-    name: 'product_id',
-    nullable: true,
-  })
-  productId: number;
 
   @IsNotEmpty()
   @IsString()
@@ -134,19 +91,19 @@ export class UserRoungeStory {
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'product_id', referencedColumnName: 'id' }])
-  ProductId: Product;
+  productId: Product;
 
   @ManyToOne(() => User, (user) => user.userRoungeStory, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
-  UserId: User;
+  userId: User;
 
   @ManyToOne(() => UserRounge, (userRounge) => userRounge.userRoungeStory, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'rounge_id', referencedColumnName: 'id' }])
-  RoungeId: UserRounge;
+  roungeId: UserRounge;
 }

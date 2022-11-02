@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Max,
+  Min,
+  ValidateIf,
+} from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -22,20 +29,6 @@ export class UserTokenList {
 
   @IsNotEmpty()
   @IsNumber()
-  @ApiProperty({
-    example: '1',
-    description: '유저 아이디',
-    required: true,
-  })
-  @Column({
-    type: 'int',
-    name: 'user_id',
-    nullable: true,
-  })
-  userId: number;
-
-  @IsNotEmpty()
-  @IsNumber()
   @Min(0)
   @Max(5)
   @ApiProperty({
@@ -50,7 +43,7 @@ export class UserTokenList {
   })
   type: number;
 
-  @IsNotEmpty()
+  @ValidateIf((object, value) => value !== null)
   @IsString()
   @ApiProperty({
     example: 'dfaSDFSDFewksdf123123.asdfisdnlf#@$.SDFsdfek314',
@@ -60,6 +53,7 @@ export class UserTokenList {
   @Column({
     type: 'varchar',
     name: 'refresh_token',
+    default: null,
   })
   refreshToken: string;
 
@@ -69,10 +63,10 @@ export class UserTokenList {
   @UpdateDateColumn({ type: 'datetime', name: 'updated_at' })
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.useTokenList, {
+  @ManyToOne(() => User, (user) => user.userTokenList, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
-  UserId: User;
+  userId: number;
 }

@@ -96,16 +96,16 @@ export class AppController {
     const _restApiKey = '277d6ee95ddddc6d1dbeb6091c263351'; // * 입력필요
     // 카카오 로그인 RedirectURI
     const _redirectUrl = 'http://localhost:3000/kakaoLoginLogicRedirect';
-    const url = `${_hostName}/oauth/authorize?client_id=${_restApiKey}&redirect_uri=${_redirectUrl}&response_type=code`;
+    const url = `${_hostName}/oauth/authorize?client_id=${_restApiKey}&redirect_uri=${_redirectUrl}&response_type=code&state=adsf3$fh#@`;
     return res.redirect(url);
   }
   @Get('kakaoLoginLogicRedirect')
   @Header('Content-Type', 'text/html')
   kakaoLoginLogicRedirect(@Query() qs, @Res() res): void {
-    console.log(qs.code);
     const _restApiKey = '277d6ee95ddddc6d1dbeb6091c263351'; // * 입력필요
     const _redirect_uri = 'http://localhost:3000/kakaoLoginLogicRedirect';
-    const _hostName = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${_restApiKey}&redirect_uri=${_redirect_uri}&code=${qs.code}`;
+    const _kakao_secret = 'IdfBw8PeKK0yStQ1Hzbm1ifHdPIJfyVk';
+    const _hostName = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${_restApiKey}&redirect_uri=${_redirect_uri}&client_secret=${_kakao_secret}&code=${qs.code}`;
     const _headers = {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
@@ -115,7 +115,6 @@ export class AppController {
       .login(_hostName, _headers)
       .then((e) => {
         console.log(e.data['access_token'], e.data['refresh_token']);
-        console.log(`TOKEN : ${e.data['access_token']}`);
         this.kakaoLogin.setToken(
           e.data['access_token'],
           e.data['refresh_token'],
@@ -139,7 +138,7 @@ export class AppController {
     console.log(`LOGOUT TOKEN : ${this.kakaoLogin.accessToken}`);
     // // 로그아웃 -(1) 연결 끊기
     this.kakaoLogin
-      .deleteLog()
+      .logout()
       .then((e) => {
         return res.send(`
           <div>

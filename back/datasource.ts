@@ -7,7 +7,7 @@ import { UserRoungeList } from 'src/entitis/User.rounge.list';
 import { UserRoungeStory } from 'src/entitis/User.rounge.stories';
 import { UserRounge } from 'src/entitis/User.rounge';
 import { UserSendList } from 'src/entitis/User.send.list';
-import { UserTokenList } from 'src/entitis/User.token.info';
+import { UserTokenList } from 'src/entitis/User.token.list';
 import { User } from 'src/entitis/User';
 
 dotenv.config();

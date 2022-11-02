@@ -14,7 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entitis/User';
 import { Product } from './entitis/Product';
 import { UserRounge } from './entitis/User.rounge';
-import { UserTokenList } from './entitis/User.token.info';
+import { UserTokenList } from './entitis/User.token.list';
 import { UserSendList } from './entitis/User.send.list';
 import { UserRoungeList } from './entitis/User.rounge.list';
 import { UserRoungeStory } from './entitis/User.rounge.stories';

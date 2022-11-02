@@ -36,20 +36,6 @@ export class UserRounge {
   id: number;
 
   @IsNotEmpty()
-  @IsNumber()
-  @ApiProperty({
-    example: '1',
-    description: '유저 아이디',
-    required: true,
-  })
-  @Column({
-    type: 'int',
-    name: 'user_id',
-    nullable: true,
-  })
-  userId: number;
-
-  @IsNotEmpty()
   @IsString()
   @MinLength(1)
   @MaxLength(10)
@@ -120,7 +106,7 @@ export class UserRounge {
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
-  UserId: User;
+  userId: User;
 
   @OneToMany(() => UserRoungeList, (userRoungeList) => userRoungeList.roungeId)
   userRoungeList: UserRounge;

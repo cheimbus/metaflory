@@ -1,14 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsDate,
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-} from 'class-validator';
+import { IsDate, IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -22,7 +13,7 @@ import { UserRounge } from './User.rounge';
 import { UserRoungeList } from './User.rounge.list';
 import { UserRoungeStory } from './User.rounge.stories';
 import { UserSendList } from './User.send.list';
-import { UserTokenList } from './User.token.info';
+import { UserTokenList } from './User.token.list';
 
 @Entity('users')
 export class User {
@@ -35,7 +26,6 @@ export class User {
 
   @IsNotEmpty()
   @IsString()
-  @MaxLength(10)
   @ApiProperty({
     example: '황시우',
     description: 'OAuth 2.0 닉네임, 최대 10길이까지 가능',
@@ -45,8 +35,6 @@ export class User {
   name: string;
 
   @IsEmail()
-  @MinLength(10)
-  @MaxLength(30)
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
@@ -59,16 +47,14 @@ export class User {
   email: string;
 
   @IsNotEmpty()
-  @Min(0)
-  @Max(1)
   @IsString()
   @ApiProperty({
     example: '0',
-    description: '0 => 남자, 1 => 여자',
+    description: 'male, female',
     required: true,
   })
-  @Column({ type: 'int', name: 'gender' })
-  gender: number;
+  @Column({ type: 'varchar', name: 'gender' })
+  gender: string;
 
   @IsNotEmpty()
   @IsDate()
@@ -82,7 +68,6 @@ export class User {
 
   @IsNotEmpty()
   @IsString()
-  @MaxLength(10)
   @ApiProperty({
     example: '카카오',
     description: 'OAuth 2.0으로 어떤 플랫폼으로 로그인 한 상태를 저장',
@@ -104,7 +89,7 @@ export class User {
   userPurchaseList: UserPurchaseList;
 
   @OneToMany(() => UserTokenList, (userTokenList) => userTokenList.userId)
-  useTokenList: UserTokenList;
+  userTokenList: UserTokenList[];
 
   @OneToMany(() => UserRoungeStory, (userRoungeStory) => userRoungeStory.userId)
   userRoungeStory: UserRoungeStory;
