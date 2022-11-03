@@ -54,6 +54,7 @@ export class UserTokenList {
     type: 'varchar',
     name: 'refresh_token',
     default: null,
+    nullable: true,
   })
   refreshToken: string;
 

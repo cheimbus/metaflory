@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  ValidateIf,
+} from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -46,24 +52,24 @@ export class User {
   @Column({ type: 'varchar', name: 'email', unique: true })
   email: string;
 
-  @IsNotEmpty()
+  @ValidateIf((object, value) => value !== null)
   @IsString()
   @ApiProperty({
     example: '0',
     description: 'male, female',
     required: true,
   })
-  @Column({ type: 'varchar', name: 'gender' })
+  @Column({ type: 'varchar', name: 'gender', nullable: true })
   gender: string;
 
-  @IsNotEmpty()
+  @ValidateIf((object, value) => value !== null)
   @IsDate()
   @ApiProperty({
     example: '10.30',
     description: '생일',
     required: true,
   })
-  @Column({ type: 'datetime', name: 'birthday' })
+  @Column({ type: 'datetime', name: 'birthday', nullable: true })
   birthday: Date;
 
   @IsNotEmpty()
@@ -92,14 +98,14 @@ export class User {
   userTokenList: UserTokenList[];
 
   @OneToMany(() => UserRoungeStory, (userRoungeStory) => userRoungeStory.userId)
-  userRoungeStory: UserRoungeStory;
+  userRoungeStory: UserRoungeStory[];
 
   @OneToMany(() => UserSendList, (userSendList) => userSendList.userId)
-  userSendList: UserSendList;
+  userSendList: UserSendList[];
 
   @OneToMany(() => UserRounge, (userRounge) => userRounge.userId)
-  userRounge: UserRounge;
+  userRounge: UserRounge[];
 
   @OneToMany(() => UserRoungeList, (userRoungeList) => userRoungeList.userId)
-  userRoungeList: UserRoungeList;
+  userRoungeList: UserRoungeList[];
 }

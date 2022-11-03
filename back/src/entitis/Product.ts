@@ -116,11 +116,11 @@ export class Product {
     () => UserPurchaseList,
     (userPurchaseList) => userPurchaseList.productId,
   )
-  userPurchaseList: UserPurchaseList;
+  userPurchaseList: UserPurchaseList[];
 
   @OneToMany(
     () => UserRoungeStory,
     (userRoungeStory) => userRoungeStory.productId,
   )
-  userRoungeStory: UserRoungeStory;
+  userRoungeStory: UserRoungeStory[];
 }

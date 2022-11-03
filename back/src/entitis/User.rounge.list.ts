@@ -24,5 +24,5 @@ export class UserRoungeList {
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'rounge_id', referencedColumnName: 'id' }])
-  roungeId: User;
+  roungeId: User[];
 }

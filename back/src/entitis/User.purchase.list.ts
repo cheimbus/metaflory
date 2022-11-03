@@ -50,5 +50,5 @@ export class UserPurchaseList {
   userId: User;
 
   @OneToMany(() => UserSendList, (userSendList) => userSendList.purchaseListId)
-  userSendList: UserSendList;
+  userSendList: UserSendList[];
 }

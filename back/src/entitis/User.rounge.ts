@@ -109,14 +109,14 @@ export class UserRounge {
   userId: User;
 
   @OneToMany(() => UserRoungeList, (userRoungeList) => userRoungeList.roungeId)
-  userRoungeList: UserRounge;
+  userRoungeList: UserRounge[];
 
   @OneToMany(() => UserSendList, (userSendList) => userSendList.roungeId)
-  userSendList: UserSendList;
+  userSendList: UserSendList[];
 
   @OneToMany(
     () => UserRoungeStory,
     (userRoungeStory) => userRoungeStory.roungeId,
   )
-  userRoungeStory: UserRoungeStory;
+  userRoungeStory: UserRoungeStory[];
 }

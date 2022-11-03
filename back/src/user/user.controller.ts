@@ -1,12 +1,16 @@
-import { Controller, Get, Post, Query, Res } from '@nestjs/common';
+import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { KakaoService } from './user.service';
+import { Response } from 'express';
+import { User } from 'src/common/decorators/user.request.decorator';
+import { jwtRefreshTokenAuthGuard } from 'src/jwt/jwt.refresh.guard';
+import { KakaoService, UserService } from './user.service';
 
 @Controller('users')
 export class UserController {
   constructor(
     private readonly kakaoService: KakaoService,
     private configService: ConfigService,
+    private userService: UserService,
   ) {}
 
   @Get('kakaologin')
@@ -20,7 +24,10 @@ export class UserController {
   }
 
   @Get('kakao-redirect')
-  async redirect(@Query() data): Promise<void> {
+  async redirect(
+    @Query() data,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<object> {
     const _host = 'https://kauth.kakao.com';
     const _client_id = this.configService.get('OAUTH_CLIENT_ID');
     const _redirect_uri = this.configService.get('OAUTH_REDIRECT_URI');
@@ -31,19 +38,51 @@ export class UserController {
         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
     };
-    return await this.kakaoService.login(_uri, _header);
+    await this.kakaoService.login(_uri, _header);
+    const userId = this.kakaoService.userId;
+    const kakaoAccessToken = this.kakaoService.accessToken;
+    const {
+      accessToken,
+      accessTokenCookieOption,
+      refreshToken,
+      refreshTokenCookieOption,
+    } = await this.userService.getTokensAndOptions();
+    await this.userService.createServerId(userId, refreshToken);
+    await this.userService.setRefreshToken();
+    res.cookie('Authorization', accessToken, accessTokenCookieOption);
+    res.cookie('RefreshToken', refreshToken, refreshTokenCookieOption);
+    // 일단 테스트하기 쉽게 리턴으로 엑세스토큰
+    return {
+      serverAccessToken: accessToken,
+      serverRefreshToken: refreshToken,
+      kakaoAccessToken,
+    };
   }
 
+  @UseGuards(jwtRefreshTokenAuthGuard)
   @Post('kakao-refresh')
-  async kakaoRefresh() {
-    return await this.kakaoService.getRefreshToken();
+  async kakaoRefresh(@Res({ passthrough: true }) res: Response, @User() user) {
+    const { accessToken, accessTokenCookieOption } =
+      await this.userService.getJwtAccessTokenAndCookieOption(user.id);
+    res.cookie('Authorization', accessToken, accessTokenCookieOption);
+    const kakaoAccessToken = await this.kakaoService.getAccessToken();
+    const serverAccessToken = accessToken;
+    return { serverAccessToken, kakaoAccessToken };
   }
 
+  @UseGuards(jwtRefreshTokenAuthGuard)
   @Post('kakao-logout')
-  async kakaoLogout() {
-    return await this.kakaoService.logout();
+  async kakaoLogout(@Res({ passthrough: true }) res: Response, @User() user) {
+    const { accessTokenCookieOption, refreshTokenCookieOption } =
+      await this.userService.getCookieOptionForLogOut();
+    await this.userService.refreshTokenToNull(user.id);
+    await this.kakaoService.logout();
+    res.cookie('Authorization', '', accessTokenCookieOption);
+    res.cookie('RefreshToken', '', refreshTokenCookieOption);
+    return '로그아웃';
   }
 
+  // 사용자 카톡까지 로그아웃시킴 나중에 사용되면 그때 사용함
   @Post('kakao-log-delete')
   async kakaoLogDelete() {
     return await this.kakaoService.deleteLog();
