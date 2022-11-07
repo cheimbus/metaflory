@@ -1,28 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Product } from './Product';
 import { User } from './User';
-import { UserRounge } from './User.rounge';
 
-@Entity('user_rounge_lists')
-export class UserRoungeList {
+@Entity('user_product_carts')
+export class UserProductCart {
   @ApiProperty({
     example: 1,
-    description: '라운지 아이디',
+    description: '카트 아이디',
   })
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @ManyToOne(() => User, (user) => user.userRoungeList, {
+  @ManyToOne(() => User, (user) => user.userProductCart, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
   userId: User;
 
-  @ManyToOne(() => UserRounge, (userRounge) => userRounge.userRoungeList, {
+  @ManyToOne(() => Product, (product) => product.userProductCart, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: 'rounge_id', referencedColumnName: 'id' }])
-  roungeId: UserRounge[];
+  @JoinColumn([{ name: 'product_id', referencedColumnName: 'id' }])
+  productId: Product[];
 }

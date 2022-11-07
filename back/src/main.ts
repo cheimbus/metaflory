@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -11,6 +12,7 @@ async function bootstrap() {
   const configService = app.get<ConfigService>(ConfigService);
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new successInterceptor());
+  app.useGlobalPipes(new ValidationPipe());
   await app.listen(configService.get('PORT'));
   console.log(`listening on port ${configService.get('PORT')} `);
 

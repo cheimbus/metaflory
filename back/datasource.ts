@@ -9,6 +9,7 @@ import { UserRounge } from 'src/entitis/User.rounge';
 import { UserSendList } from 'src/entitis/User.send.list';
 import { UserTokenList } from 'src/entitis/User.token.list';
 import { User } from 'src/entitis/User';
+import { UserProductCart } from 'src/entitis/User.product.cart';
 
 dotenv.config();
 const dataSource = new DataSource({
@@ -39,6 +40,7 @@ const dataSource = new DataSource({
     UserSendList,
     UserTokenList,
     User,
+    UserProductCart,
   ],
   migrations: [path.join(__dirname, 'src/migrations/*')],
   charset: 'utf8mb4',

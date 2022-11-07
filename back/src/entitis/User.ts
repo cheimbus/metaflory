@@ -14,6 +14,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { UserProductCart } from './User.product.cart';
 import { UserPurchaseList } from './User.purchase.list';
 import { UserRounge } from './User.rounge';
 import { UserRoungeList } from './User.rounge.list';
@@ -40,16 +41,17 @@ export class User {
   @Column({ type: 'varchar', name: 'name' })
   name: string;
 
+  @ValidateIf((object, value) => value !== null)
   @IsEmail()
-  @IsNotEmpty()
   @IsString()
   @ApiProperty({
     example: 'siu@naver.com',
     description:
       'OAuth 2.0 이메일, 최대 이메일 제외 20길이까지 가능, 또한 이메일 형식을 갖춰야 함',
     required: true,
+    nullable: true,
   })
-  @Column({ type: 'varchar', name: 'email', unique: true })
+  @Column({ type: 'varchar', name: 'email', unique: true, nullable: true })
   email: string;
 
   @ValidateIf((object, value) => value !== null)
@@ -58,6 +60,7 @@ export class User {
     example: '0',
     description: 'male, female',
     required: true,
+    nullable: true,
   })
   @Column({ type: 'varchar', name: 'gender', nullable: true })
   gender: string;
@@ -68,6 +71,7 @@ export class User {
     example: '10.30',
     description: '생일',
     required: true,
+    nullable: true,
   })
   @Column({ type: 'datetime', name: 'birthday', nullable: true })
   birthday: Date;
@@ -108,4 +112,7 @@ export class User {
 
   @OneToMany(() => UserRoungeList, (userRoungeList) => userRoungeList.userId)
   userRoungeList: UserRoungeList[];
+
+  @OneToMany(() => UserProductCart, (userProductCart) => userProductCart.userId)
+  userProductCart: UserProductCart[];
 }

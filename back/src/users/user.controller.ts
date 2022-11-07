@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { User } from 'src/common/decorators/user.request.decorator';
+import { PositivePipe } from 'src/common/pipes/positiveInt.pipe';
+import { JwtAccessTokenAuthGuard } from 'src/jwt/jwt.access.guard';
 import { jwtRefreshTokenAuthGuard } from 'src/jwt/jwt.refresh.guard';
 import { KakaoService, UserService } from './user.service';
 
@@ -39,8 +50,8 @@ export class UserController {
       },
     };
     await this.kakaoService.login(_uri, _header);
-    const userId = this.kakaoService.userId;
-    const kakaoAccessToken = this.kakaoService.accessToken;
+    const { name, email, gender, birthday, userId, kakaoAccessToken } =
+      await this.kakaoService.getUserInfo();
     const {
       accessToken,
       accessTokenCookieOption,
@@ -48,6 +59,7 @@ export class UserController {
       refreshTokenCookieOption,
     } = await this.userService.getTokensAndOptions();
     await this.userService.createServerId(userId, refreshToken);
+    await this.userService.setUserInfo(name, email, gender, birthday);
     await this.userService.setRefreshToken();
     res.cookie('Authorization', accessToken, accessTokenCookieOption);
     res.cookie('RefreshToken', refreshToken, refreshTokenCookieOption);
@@ -76,6 +88,7 @@ export class UserController {
     const { accessTokenCookieOption, refreshTokenCookieOption } =
       await this.userService.getCookieOptionForLogOut();
     await this.userService.refreshTokenToNull(user.id);
+    await this.kakaoService.refreshTokenToNull(user.id);
     await this.kakaoService.logout();
     res.cookie('Authorization', '', accessTokenCookieOption);
     res.cookie('RefreshToken', '', refreshTokenCookieOption);
@@ -86,5 +99,16 @@ export class UserController {
   @Post('kakao-log-delete')
   async kakaoLogDelete() {
     return await this.kakaoService.deleteLog();
+  }
+
+  // 유저정보 가져오기
+  @UseGuards(JwtAccessTokenAuthGuard)
+  @Get(':id')
+  async getUserInfo(
+    @User() user,
+    @Param('id', PositivePipe, ParseIntPipe) id: number,
+  ): Promise<any> {
+    const intParam = id;
+    return await this.userService.getUserInfo(user.id, intParam);
   }
 }

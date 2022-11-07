@@ -14,6 +14,10 @@ import { JwtService } from '@nestjs/jwt';
 export class UserService {
   accessToken: string;
   refreshToken: string;
+  name: string;
+  email: string;
+  gender: string;
+  birthday: Date;
   userId: number;
   type: number;
   constructor(
@@ -25,6 +29,10 @@ export class UserService {
   ) {
     this.accessToken = '';
     this.refreshToken = '';
+    this.name = '';
+    this.email = '';
+    this.gender = '';
+    this.birthday;
     this.userId;
     this.type = 0;
   }
@@ -183,6 +191,28 @@ export class UserService {
       },
     };
   }
+
+  // kakao에서 받아온 user정보를 저장
+  async setUserInfo(name, email, gender, birtday): Promise<any> {
+    this.name = name;
+    this.email = email;
+    this.gender = gender;
+    this.birthday = birtday;
+  }
+
+  // 유저 정보 가져오기
+  async getUserInfo(userId: number, paramId: number): Promise<any> {
+    if (userId !== this.userId || userId !== paramId) {
+      throw new UnauthorizedException('잘못된 접근입니다.');
+    }
+    const { name, email, gender, birthday } = {
+      name: this.name,
+      email: this.email,
+      gender: this.gender,
+      birthday: this.birthday,
+    };
+    return { name, email, gender, birthday };
+  }
 }
 
 @Injectable()
@@ -192,7 +222,7 @@ export class KakaoService {
   name: string;
   email: string;
   gender: string;
-  birhday: Date;
+  birthday: Date;
   accountStatus: string;
   userId: number;
   type: number;
@@ -206,7 +236,7 @@ export class KakaoService {
     this.name = '';
     this.email = '';
     this.gender = '';
-    this.birhday;
+    this.birthday;
     this.accountStatus = '카카오';
     this.userId;
     this.type = 1;
@@ -228,7 +258,7 @@ export class KakaoService {
     this.name = info.data.kakao_account.profile.nickname;
     this.email = info.data.kakao_account.email;
     this.gender = info.data.kakao_account.gender;
-    this.birhday = info.data.kakao_account.birthday;
+    this.birthday = info.data.kakao_account.birthday;
     const exist = await this.userRepository.findOne({
       where: { email: this.email, accountStatus: this.accountStatus },
     });
@@ -263,7 +293,7 @@ export class KakaoService {
       user.name = this.name;
       user.email = this.email;
       user.gender = this.gender;
-      user.birthday = this.birhday;
+      user.birthday = this.birthday;
       user.accountStatus = this.accountStatus;
       const saveUser = await queryRunner.manager.getRepository(User).save(user);
       this.userId = saveUser.id;
@@ -283,9 +313,26 @@ export class KakaoService {
   }
 
   // 유저 정보 가져오기
-  async userInfo(): Promise<any> {
-    const { name, email } = { name: this.name, email: this.email };
-    return { name, email };
+  async getUserInfo(): Promise<any> {
+    const { name, email, gender, birthday, userId, kakaoAccessToken } = {
+      name: this.name,
+      email: this.email,
+      gender: this.gender,
+      birthday: this.birthday,
+      userId: this.userId,
+      kakaoAccessToken: this.accessToken,
+    };
+    return { name, email, gender, birthday, userId, kakaoAccessToken };
+  }
+
+  async refreshTokenToNull(id: number): Promise<any> {
+    return dataSource.manager
+      .createQueryBuilder()
+      .update(UserTokenList)
+      .set({ refreshToken: null })
+      .where('userId=:userId', { userId: id })
+      .andWhere('type=:type', { type: this.type })
+      .execute();
   }
 
   // 토큰 만료 로그아웃

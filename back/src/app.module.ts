@@ -2,13 +2,11 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { KakaoLogin, MyService } from './app.service';
-import { UserModule } from './user/user.module';
-import { ProductModule } from './product/product.module';
-import { RoungeController } from './rounge/rounge.controller';
-import { RoungeService } from './rounge/rounge.service';
-import { RoungeModule } from './rounge/rounge.module';
-import { StoryModule } from './story/story.module';
-import { ListModule } from './list/list.module';
+import { UserModule } from './users/user.module';
+import { ProductModule } from './products/product.module';
+import { RoungeController } from './rounges/rounge.controller';
+import { RoungeService } from './rounges/rounge.service';
+import { RoungeModule } from './rounges/rounge.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entitis/User';
 import { Product } from './entitis/Product';
@@ -20,6 +18,8 @@ import { UserRoungeStory } from './entitis/User.rounge.stories';
 import { UserPurchaseList } from './entitis/User.purchase.list';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import path from 'path/posix';
+import { UserProductCart } from './entitis/User.product.cart';
+import { AdminsModule } from './admins/admins.module';
 
 @Module({
   imports: [
@@ -33,18 +33,17 @@ import path from 'path/posix';
       UserRoungeList,
       UserRoungeStory,
       UserPurchaseList,
+      UserProductCart,
     ]),
-    //     TEST_HOST = localhost
-    // TEST_DB_PORT= 3306
-    // TEST_USER_NAME= root
-    // TEST_PASSWORD= 950403
-    // TEST_DATABASE= test
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         return {
           type: 'mysql',
-          host: 'localhost',
+          host:
+            configService.get('TEST') === 'true'
+              ? configService.get('TEST_HOST')
+              : configService.get('HOST'),
           port:
             configService.get('TEST') === 'true'
               ? configService.get('TEST_DB_PORT')
@@ -73,8 +72,7 @@ import path from 'path/posix';
     UserModule,
     ProductModule,
     RoungeModule,
-    StoryModule,
-    ListModule,
+    AdminsModule,
   ],
   controllers: [AppController, RoungeController],
   providers: [MyService, KakaoLogin, RoungeService],
