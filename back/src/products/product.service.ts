@@ -39,7 +39,11 @@ export class ProductService {
     const filesNames = [];
     for (let i = 0; i < files.length; i++) {
       filesNames.push(
-        `${this.configService.get('COMMON_PATH')}${files[i].filename}`,
+        `${
+          this.configService.get('TEST') === 'true'
+            ? this.configService.get('TEST_COMMON_PATH')
+            : this.configService.get('COMMON_PATH')
+        }${files[i].filename}`,
       );
     }
     // db에서 꺼내서 사용할 때는 JSON.parse를 해준다.
@@ -84,7 +88,11 @@ export class ProductService {
       const imageInfos = [];
       for (let i = 0; i < files.length; i++) {
         imageInfos.push(
-          `${this.configService.get('COMMON_PATH')}${files[i].filename}`,
+          `${
+            this.configService.get('TEST') === 'true'
+              ? this.configService.get('TEST_COMMON_PATH')
+              : this.configService.get('COMMON_PATH')
+          }${files[i].filename}`,
         );
       }
       await queryRunner.commitTransaction();
@@ -173,16 +181,18 @@ export class ProductService {
     if (!getProductInfos) {
       throw new BadRequestException('해당 정보가 없습니다.');
     }
+    console.log(getProductInfos[0].imagePath);
     try {
       const productInfos = [];
       for (let i = 0; i < getProductInfos.length; i++) {
-        await queryRunner.manager
-          .getRepository(Product)
-          .createQueryBuilder('product');
+        const parsedImage = JSON.parse(getProductInfos[i].imagePath);
         productInfos.push({
-          url: `${this.configService.get('ADMIN_PATH')}${
-            getProductInfos[i].id
-          }`,
+          url: `${
+            this.configService.get('TEST') === 'true'
+              ? this.configService.get('TEST_ADMIN_PATH')
+              : this.configService.get('ADMIN_PATH')
+          }${getProductInfos[i].id}`,
+          image: `${parsedImage[0]}`,
           name: getProductInfos[i].name,
           price: getProductInfos[i].price,
           isSoldout: getProductInfos[i].isSoldout,
