@@ -13,14 +13,14 @@ export class AdminsController {
     return;
   }
 
-  // 관리자 로그인은 바디에 email을 직접 입력해줘야 함
+  // 관리자 로그인은 바디에 email, password를 직접 입력해줘야 함
   @Post('login')
   async loginAdmin(
     @Res({ passthrough: true }) res: Response,
     @Body() data: AdminLoginDto,
   ) {
     const { accessToken, accessTokenCookieOption } =
-      await this.adminService.loginAdmin(data.email);
+      await this.adminService.loginAdmin(data.email, data.password);
     res.cookie('Authorization', accessToken, accessTokenCookieOption);
     // 테스트하기 위해 나중에 지움
     return { accessToken, accessTokenCookieOption };

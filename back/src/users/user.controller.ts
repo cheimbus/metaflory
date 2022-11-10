@@ -1,17 +1,7 @@
-import {
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-  Query,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { User } from 'src/common/decorators/user.request.decorator';
-import { PositivePipe } from 'src/common/pipes/positiveInt.pipe';
 import { JwtAccessTokenAuthGuard } from 'src/jwt/jwt.access.guard';
 import { jwtRefreshTokenAuthGuard } from 'src/jwt/jwt.refresh.guard';
 import { KakaoService, UserService } from './user.service';
@@ -103,12 +93,8 @@ export class UserController {
 
   // 유저정보 가져오기
   @UseGuards(JwtAccessTokenAuthGuard)
-  @Get(':id')
-  async getUserInfo(
-    @User() user,
-    @Param('id', PositivePipe, ParseIntPipe) id: number,
-  ): Promise<any> {
-    const intParam = id;
-    return await this.userService.getUserInfo(user.id, intParam);
+  @Get()
+  async getUserInfo(@User() user): Promise<any> {
+    return await this.userService.getUserInfo(user.id);
   }
 }

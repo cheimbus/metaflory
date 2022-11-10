@@ -43,7 +43,7 @@ export class AdminsService {
     }
   }
 
-  async loginAdmin(data: string) {
+  async loginAdmin(data: string, data2: string) {
     const queryRunner = await dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -51,7 +51,9 @@ export class AdminsService {
       where: { accountStatus: this.configService.get('ADMIN_ACCOUNTSTATUS') },
     });
     const exist = await bcrypt.compare(data, adminInfo.email);
-    if (!exist) {
+    const isPassed = data2 === this.configService.get('ADMIN_PASSWORD');
+    console.log(this.configService.get('ADMIN_PASSWORD'), data2);
+    if (exist !== isPassed) {
       throw new UnauthorizedException('잘못된 정보입니다.');
     }
     const payload = {

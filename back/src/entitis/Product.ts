@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  ValidateIf,
+} from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -24,6 +30,27 @@ export class Product {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
+    example: '시우',
+    description: '작가명',
+    required: true,
+  })
+  @Column({ type: 'varchar', name: 'author' })
+  author: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  @ApiProperty({
+    example: '1',
+    description: 'soldout',
+    default: false,
+    required: true,
+  })
+  @Column({ type: 'tinyint', name: 'is_soldout', default: false })
+  isSoldout: boolean;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
     example: '활짝 핀 데이지 꽃',
     description: '상품 이름',
     required: true,
@@ -31,8 +58,9 @@ export class Product {
   @Column({ type: 'varchar', name: 'name', unique: true, length: 30 })
   name: string;
 
-  @IsNotEmpty()
+  @ValidateIf((object, value) => typeof value !== typeof String(value))
   @IsNumber()
+  @IsNotEmpty()
   @ApiProperty({
     example: '10000',
     description: '가격',
@@ -64,6 +92,7 @@ export class Product {
   })
   flowerLanguage: string;
 
+  @ValidateIf((object, value) => typeof value !== typeof String(value))
   @IsNotEmpty()
   @IsNumber()
   @ApiProperty({
@@ -79,6 +108,7 @@ export class Product {
   })
   quantityMax: number;
 
+  @ValidateIf((object, value) => typeof value !== typeof String(value))
   @IsNotEmpty()
   @IsNumber()
   @ApiProperty({
@@ -102,7 +132,7 @@ export class Product {
     required: true,
   })
   @Column({
-    type: 'varchar',
+    type: 'json',
     name: 'image_path',
   })
   imagePath: string;

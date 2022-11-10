@@ -201,8 +201,8 @@ export class UserService {
   }
 
   // 유저 정보 가져오기
-  async getUserInfo(userId: number, paramId: number): Promise<any> {
-    if (userId !== this.userId || userId !== paramId) {
+  async getUserInfo(userId: number): Promise<any> {
+    if (userId !== this.userId) {
       throw new UnauthorizedException('잘못된 접근입니다.');
     }
     const { name, email, gender, birthday } = {
