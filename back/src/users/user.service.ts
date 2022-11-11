@@ -193,7 +193,12 @@ export class UserService {
   }
 
   // kakao에서 받아온 user정보를 저장
-  async setUserInfo(name, email, gender, birtday): Promise<any> {
+  async setUserInfo(
+    name: string,
+    email: string,
+    gender: string,
+    birtday: Date,
+  ): Promise<any> {
     this.name = name;
     this.email = email;
     this.gender = gender;
@@ -201,8 +206,8 @@ export class UserService {
   }
 
   // 유저 정보 가져오기
-  async getUserInfo(userId: number): Promise<any> {
-    if (userId !== this.userId) {
+  async getUserInfo(id: number, userId: number): Promise<any> {
+    if (id !== userId) {
       throw new UnauthorizedException('잘못된 접근입니다.');
     }
     const { name, email, gender, birthday } = {

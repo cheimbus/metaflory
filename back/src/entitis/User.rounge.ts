@@ -85,8 +85,8 @@ export class UserRounge {
   @IsBoolean()
   @MaxLength(5)
   @ApiProperty({
-    example: 'false',
-    description: 'soft delete false => 삭제안됨, true => 삭제 됨',
+    example: '0',
+    description: 'false',
     default: false,
   })
   @Column({ type: 'boolean', name: 'is_deleted', default: false })

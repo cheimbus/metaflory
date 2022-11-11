@@ -9,12 +9,12 @@ import {
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserProductCart } from './User.product.cart';
 import { UserPurchaseList } from './User.purchase.list';
 import { UserRoungeStory } from './User.rounge.stories';
 
@@ -40,13 +40,24 @@ export class Product {
   @IsNotEmpty()
   @IsBoolean()
   @ApiProperty({
-    example: '1',
+    example: '0',
     description: 'soldout',
     default: false,
     required: true,
   })
   @Column({ type: 'tinyint', name: 'is_soldout', default: false })
   isSoldout: boolean;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  @ApiProperty({
+    example: '0',
+    description: 'false',
+    default: false,
+    required: true,
+  })
+  @Column({ type: 'tinyint', name: 'is_deleted', default: false })
+  isDeleted: boolean;
 
   @IsNotEmpty()
   @IsString()
@@ -143,6 +154,9 @@ export class Product {
   @UpdateDateColumn({ type: 'datetime', name: 'updated_at' })
   updatedAt: Date;
 
+  @DeleteDateColumn({ type: 'datetime', name: 'deleted_at' })
+  deletedAt: Date;
+
   @OneToMany(
     () => UserPurchaseList,
     (userPurchaseList) => userPurchaseList.productId,
@@ -154,10 +168,4 @@ export class Product {
     (userRoungeStory) => userRoungeStory.productId,
   )
   userRoungeStory: UserRoungeStory[];
-
-  @OneToMany(
-    () => UserProductCart,
-    (userProductCart) => userProductCart.productId,
-  )
-  userProductCart: UserProductCart[];
 }

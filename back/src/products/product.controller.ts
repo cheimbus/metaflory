@@ -11,8 +11,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { User } from 'src/common/decorators/user.request.decorator';
 import { CreateProductDto } from 'src/common/dto/create.product.dto';
+import { ModifyProductDto } from 'src/common/dto/modify.product.dto';
 import { PositivePipe } from 'src/common/pipes/positiveInt.pipe';
 import { multerOptions } from 'src/common/utils/multer.option';
 import { AdminAuthGuard } from 'src/jwt/admin.gurad';
@@ -26,7 +26,7 @@ import { ProductService } from './product.service';
 export class ProductController {
   constructor(private productService: ProductService) {}
 
-  // 상품 생성
+  // 상품 생성 (관리자)
   @UseGuards(AdminAuthGuard)
   @Post('admin')
   @UseInterceptors(FilesInterceptor('image', null, multerOptions()))
@@ -34,25 +34,61 @@ export class ProductController {
   async createProduct(
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() data: CreateProductDto,
-    @User() user,
   ): Promise<any> {
-    return await this.productService.createProduct({ data }, files, user);
+    return await this.productService.createProduct({ data }, files);
   }
 
   // 상품 뷰 (관리자)
   @UseGuards(AdminAuthGuard)
-  @Get('admin/:id')
+  @Get(':id/admin')
   async getOneProduct(
     @Param('id', PositivePipe, ParseIntPipe) id: number,
-    @User() user,
-  ) {
-    return this.productService.getOneProductToAdmin(id, user);
+  ): Promise<any> {
+    return this.productService.getOneProductToAdmin(id);
   }
 
   // 상품 목록 (관리자)
   @UseGuards(AdminAuthGuard)
   @Get('admin')
-  async getAllProduct(@User() user) {
-    return this.productService.getAllProductToAdmin(user);
+  async getAllProduct(): Promise<any> {
+    return this.productService.getAllProductToAdmin();
   }
+
+  // 상품 수정하기 전 이전 데이터 가져오기 (관리자)
+  @UseGuards(AdminAuthGuard)
+  @Get(':id/admin/mo')
+  async getProductInfo(
+    @Param('id', ParseIntPipe, PositivePipe) id: number,
+  ): Promise<any> {
+    return this.productService.getProductInfoBeforeModify(id);
+  }
+
+  // 상품 수정 (관리자)
+  @UseGuards(AdminAuthGuard)
+  @UseInterceptors(FilesInterceptor('image', null, multerOptions()))
+  @Post(':id/admin/mo')
+  async modifyProduct(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Param('id') id: number,
+    @Body() data: ModifyProductDto,
+  ) {
+    return await this.productService.modifyProductInfo({ data }, files, id);
+  }
+
+  // 상품 삭제 (관리자) soft delete
+  @UseGuards(AdminAuthGuard)
+  @Post(':id/admin/de')
+  async deleteProduct(@Param('id', ParseIntPipe, PositivePipe) id: number) {
+    return await this.productService.deleteProduct(id);
+  }
+
+  // 상품 삭제 복구 (관리자)
+  @UseGuards(AdminAuthGuard)
+  @Post(':id/admin/re')
+  async restoreProduct(@Param('id', ParseIntPipe, PositivePipe) id: number) {
+    return await this.productService.restoreProduct(id);
+  }
+  // 상품 목록 (사용자)
+
+  // 상품 뷰 (사용자)
 }

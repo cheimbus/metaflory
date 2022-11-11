@@ -5,15 +5,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
-import { User } from 'src/entitis/User';
-import { adminAccessPayload } from './admin.token.payload';
+import { AdminLoginPayload } from 'src/common/payloads/admin.login.payload';
+import { Admin } from 'src/entitis/Admin';
 @Injectable()
 export class AdminAuthStrategy extends PassportStrategy(
   Strategy,
   'AdminAuthGuard',
 ) {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Admin) private adminRepository: Repository<Admin>,
     configService: ConfigService,
   ) {
     // 토큰 유효성 검사
@@ -25,13 +25,13 @@ export class AdminAuthStrategy extends PassportStrategy(
     });
   }
 
-  async validate(@Req() req: Request, payload: adminAccessPayload) {
-    const findAdminByEmailAndStatus = await this.userRepository.findOne({
-      where: { name: payload.name },
+  async validate(@Req() req: Request, payload: AdminLoginPayload) {
+    const findAdminByEmail = await this.adminRepository.findOne({
+      where: { email: payload.email },
     });
-    if (!findAdminByEmailAndStatus) {
+    if (!findAdminByEmail) {
       throw new BadRequestException('해당 정보가 없습니다.');
     }
-    return findAdminByEmailAndStatus.name;
+    return findAdminByEmail.id;
   }
 }

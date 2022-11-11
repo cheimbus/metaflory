@@ -18,14 +18,15 @@ import { UserRoungeStory } from './entitis/User.rounge.stories';
 import { UserPurchaseList } from './entitis/User.purchase.list';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import path from 'path/posix';
-import { UserProductCart } from './entitis/User.product.cart';
 import { AdminsModule } from './admins/admins.module';
+import { Admin } from './entitis/Admin';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forFeature([
       User,
+      Admin,
       Product,
       UserRounge,
       UserTokenList,
@@ -33,7 +34,6 @@ import { AdminsModule } from './admins/admins.module';
       UserRoungeList,
       UserRoungeStory,
       UserPurchaseList,
-      UserProductCart,
     ]),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],

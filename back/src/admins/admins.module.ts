@@ -3,13 +3,13 @@ import { AdminsService } from './admins.service';
 import { AdminsController } from './admins.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/entitis/User';
 import { JwtModule } from '@nestjs/jwt';
+import { Admin } from 'src/entitis/Admin';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([Admin]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

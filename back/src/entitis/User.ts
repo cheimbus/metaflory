@@ -14,7 +14,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserProductCart } from './User.product.cart';
 import { UserPurchaseList } from './User.purchase.list';
 import { UserRounge } from './User.rounge';
 import { UserRoungeList } from './User.rounge.list';
@@ -57,8 +56,8 @@ export class User {
   @ValidateIf((object, value) => value !== null)
   @IsString()
   @ApiProperty({
-    example: '0',
-    description: 'male, female',
+    example: 'male, female',
+    description: '남자 여자',
     required: true,
     nullable: true,
   })
@@ -112,7 +111,4 @@ export class User {
 
   @OneToMany(() => UserRoungeList, (userRoungeList) => userRoungeList.userId)
   userRoungeList: UserRoungeList[];
-
-  @OneToMany(() => UserProductCart, (userProductCart) => userProductCart.userId)
-  userProductCart: UserProductCart[];
 }

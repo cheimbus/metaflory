@@ -5,35 +5,32 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { User } from 'src/entitis/User';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
+import { Admin } from 'src/entitis/Admin';
 @Injectable()
 export class AdminsService {
   constructor(
     private configService: ConfigService,
     private jwtService: JwtService,
   ) {}
-  async createAdmin(): Promise<object> {
+  async createAdmin(email: string, password: string): Promise<any> {
     const queryRunner = await dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    const exist = await queryRunner.manager.getRepository(User).find({
-      where: { accountStatus: this.configService.get('ADMIN_ACCOUNTSTATUS') },
-    });
+    const exist = await queryRunner.manager
+      .getRepository(Admin)
+      .find({ where: { id: 1 } });
     if (exist.length > 0) {
       throw new BadRequestException('더 이상 생성할 수 없습니다.');
     }
     try {
-      const hashEmail = await bcrypt.hash(
-        this.configService.get('ADMIN_EMAIL'),
-        12,
-      );
-      const admin = new User();
-      admin.name = this.configService.get('ADMIN_NAME');
-      admin.email = hashEmail;
-      admin.accountStatus = this.configService.get('ADMIN_ACCOUNTSTATUS');
-      await queryRunner.manager.getRepository(User).save(admin);
+      const hashedEmail = await bcrypt.hash(email, 12);
+      const hashedPassword = await bcrypt.hash(password, 12);
+      const admin = new Admin();
+      admin.email = hashedEmail;
+      admin.password = hashedPassword;
+      await queryRunner.manager.getRepository(Admin).save(admin);
       await queryRunner.commitTransaction();
       return;
     } catch (err) {
@@ -43,21 +40,20 @@ export class AdminsService {
     }
   }
 
-  async loginAdmin(data: string, data2: string) {
+  async loginAdmin(email: string, password: string) {
     const queryRunner = await dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    const adminInfo = await queryRunner.manager.getRepository(User).findOne({
-      where: { accountStatus: this.configService.get('ADMIN_ACCOUNTSTATUS') },
-    });
-    const exist = await bcrypt.compare(data, adminInfo.email);
-    const isPassed = data2 === this.configService.get('ADMIN_PASSWORD');
-    console.log(this.configService.get('ADMIN_PASSWORD'), data2);
-    if (exist !== isPassed) {
+    const exist = await queryRunner.manager
+      .getRepository(Admin)
+      .find({ where: { id: 1 } });
+    const isEmail = await bcrypt.compare(email, exist[0].email);
+    const isPassword = await bcrypt.compare(password, exist[0].password);
+    if (!isEmail || !isPassword) {
       throw new UnauthorizedException('잘못된 정보입니다.');
     }
     const payload = {
-      name: this.configService.get('ADMIN_NAME'),
+      id: exist[0].id,
     };
     const accessToken = await this.jwtService.sign(payload);
     const accessTokenCookieOption = {
