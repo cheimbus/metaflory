@@ -346,4 +346,77 @@ export class ProductService {
       await queryRunner.release();
     }
   }
+
+  // 상품 뷰 (사용자)
+  async getOneProductForUser(name: string): Promise<any> {
+    const queryRunner = await dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    const productInfo = await queryRunner.manager
+      .getRepository(Product)
+      .createQueryBuilder('product')
+      .where('product.name=:name', { name })
+      .andWhere('product.isDeleted=:isDeleted', { isDeleted: false })
+      .getOne();
+    if (!productInfo) {
+      throw new BadRequestException('해당 정보가 없습니다.');
+    }
+    try {
+      const parsedImagePath = JSON.parse(productInfo.imagePath);
+      await queryRunner.commitTransaction();
+      return {
+        author: productInfo.author,
+        isSoldout: productInfo.isSoldout,
+        name: productInfo.name,
+        price: productInfo.price,
+        content: productInfo.content,
+        flowerLanguage: productInfo.flowerLanguage,
+        quantityMax: productInfo.quantityMax,
+        quantityNow: productInfo.quantityMax,
+        imagePath: parsedImagePath,
+      };
+    } catch (err) {
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async getAllProductForuser(): Promise<any> {
+    const queryRunner = await dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    const getProductInfos = await dataSource.manager
+      .getRepository(Product)
+      .createQueryBuilder('product')
+      .where('product.isDeleted=:isDeleted', { isDeleted: false })
+      .getMany();
+    if (!getProductInfos) {
+      throw new BadRequestException('해당 정보가 없습니다.');
+    }
+    try {
+      const productInfos = [];
+      for (let i = 0; i < getProductInfos.length; i++) {
+        const parsedImagePath = JSON.parse(getProductInfos[i].imagePath);
+        productInfos.push({
+          viewUri: `${
+            this.configService.get('TEST') === 'true'
+              ? this.configService.get('TEST_PRODUCT_PATH')
+              : this.configService.get('PRODUCT_PATH')
+          }${getProductInfos[i].id}`,
+          imagePath: parsedImagePath[0],
+          name: getProductInfos[i].name,
+          price: getProductInfos[i].price,
+          isSoldout: getProductInfos[i].isSoldout,
+        });
+      }
+      await queryRunner.commitTransaction();
+      return productInfos;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+  }
 }

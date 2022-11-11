@@ -1,5 +1,4 @@
 import {
-  Bind,
   Body,
   Controller,
   Get,
@@ -88,7 +87,16 @@ export class ProductController {
   async restoreProduct(@Param('id', ParseIntPipe, PositivePipe) id: number) {
     return await this.productService.restoreProduct(id);
   }
-  // 상품 목록 (사용자)
 
   // 상품 뷰 (사용자)
+  @Get(':name')
+  async getOneProductForUser(@Param('name') name: string): Promise<any> {
+    return await this.productService.getOneProductForUser(name);
+  }
+
+  // 상품 목록 (사용자)
+  @Get()
+  async getAllProductForuser(): Promise<any> {
+    return await this.productService.getAllProductForuser();
+  }
 }
