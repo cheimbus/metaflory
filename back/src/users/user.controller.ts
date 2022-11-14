@@ -69,12 +69,12 @@ export class UserController {
     res.cookie('Authorization', accessToken, accessTokenCookieOption);
     res.cookie('RefreshToken', refreshToken, refreshTokenCookieOption);
     // 일단 테스트하기 쉽게 리턴으로 엑세스토큰
-    return {
+   return {
       serverAccessToken: accessToken,
       serverRefreshToken: refreshToken,
       kakaoAccessToken,
       userUri,
-    };
+     };
   }
 
   @UseGuards(jwtRefreshTokenAuthGuard)

@@ -1,3 +1,9 @@
+* {
+  margin:0;
+  padding:0; 
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -26,7 +32,96 @@ header nav a{
 }
 
 footer {
-  display: flex;
-  border:1px solid #000;
-  height:40px;
+  width:100%;
+  position:absolute;
+  bottom:0;
+  height:130px;
 }
+footer .line__t {
+  border-top: 1px solid #000; 
+  top:0px;
+  margin:0px 20px; 
+}
+
+footer .footer__inner{
+  margin:0px 40px; 
+  display: flex;
+  justify-content: flex-start;
+}
+
+footer .footer__inner .footer__l{
+  padding-top: 20px;
+  position:absolute;
+}
+
+.footer__inner .footer__l .logo h3{
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.footer__inner .footer__l .copyrights p {
+  margin-top: 5px;
+  color:#9f9f9f;
+  line-height: 1.1rem;
+  font-weight: 400;
+}  
+/*
+.giftpage{
+  max-width: 1200px;
+  width:100%;
+  margin:0 auto; 
+}
+
+.giftpage .giftpage__inner{
+  border:1px solid #0ff;
+  max-width:400px;
+  width:auto;
+  height:auto;
+  position: relative;
+}
+
+.giftpage__inner img{ 
+  max-width: 400px;
+  width:100%;
+  height:auto; 
+}
+
+.giftpage__inner p{
+  top:0;
+  position: absolute;
+  width:100%;
+  height: 100%;
+  background: #0005; 
+}
+
+
+.grass__wrap{
+  width:256px;
+  height:256px;
+  border:1px solid #000;
+  display:flex;
+}
+
+.grass__wrap .tile{
+  width:16px;
+  height:16px; 
+  margin:0;padding:0;
+  background-image: url('http://127.0.0.1:3000/img/flower/Berry_Garden.png');
+
+}
+
+.grass1{ 
+  background-position: -49px -48px;
+}
+.grass2{ 
+  background-position: -1px -64px;
+}
+.grass3{ 
+  background-position: -17px -64px;
+}
+.grass4{ 
+  background-position: -33px -64px;
+}
+.grass5{ 
+  background-position: -48px -64px;
+}*/

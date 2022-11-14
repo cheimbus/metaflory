@@ -1,15 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css'; 
-import LandingPage from './pages/Landing/LandingPage';
+import './index.css';  
 import reportWebVitals from './reportWebVitals'; 
 import PageRouter from './router/PageRouter';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { CookiesProvider } from 'react-cookie';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode> 
-    <PageRouter />
-  </React.StrictMode>
+     <React.StrictMode>   
+        <CookiesProvider>
+          <PageRouter /> 
+        </CookiesProvider>
+     </React.StrictMode>  
 );
 
 // If you want to start measuring performance in your app, pass a function

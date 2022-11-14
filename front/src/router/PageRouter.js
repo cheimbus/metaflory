@@ -7,9 +7,12 @@ import {
 import ErrorPage from "../pages/Error/ErrorPage";
 import LoginPage from "../pages/Login/LoginPage";
 import MainPage from "../pages/Home/MainPage";
-import Root from "../pages/RootPage";
+import App from "../App";
 import ProductListPage from "../pages/Product/ProductListPage";
 import ProductViewPage from "../pages/Product/ProductViewPage";
+import MessageReceivePage from "../pages/Gift/MessageRecievePage";
+import MyGrassPage from "../pages/Landing/MyGrassPage";
+import AdmLoginPage from "../pages/Admin/LoginPage";
 
 
 
@@ -18,14 +21,17 @@ export default function PageRouter(){
     const router = createBrowserRouter([
         {
             path:'/',
-            element:<Root/>,
+            element:<App/>,
             errorElement:<ErrorPage/>,
             children:[
                 {index:true, element:<MainPage/>},
                 {path:'/login',element:<LoginPage/>}, 
+                {path:'/login/kakao',element:<LoginPage thirdparty='kakao'/>}, 
                 {path:'/products',element:<ProductListPage/>},
-                {path:'/products/:productId',element:<ProductViewPage/>}
-                
+                {path:'/products/:productId',element:<ProductViewPage/>},
+                {path:'/gift',element:<MessageReceivePage/>},
+                {path:'/grass',element:<MyGrassPage/>} ,
+                {path:'/adm/login',element:<AdmLoginPage/>},
             ]
         },
     ]);
@@ -33,3 +39,12 @@ export default function PageRouter(){
     
     return <RouterProvider router={router}/>;
 }
+
+/*
+
+경로 정리
+/ -> 
+
+
+
+*/
