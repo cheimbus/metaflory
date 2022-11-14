@@ -20,6 +20,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import path from 'path/posix';
 import { AdminsModule } from './admins/admins.module';
 import { Admin } from './entitis/Admin';
+import { Category } from './entitis/Category';
+import { Product_category_list } from './entitis/Product.category.list';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { Admin } from './entitis/Admin';
       UserRoungeList,
       UserRoungeStory,
       UserPurchaseList,
+      Category,
+      Product_category_list,
     ]),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],

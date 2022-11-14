@@ -35,10 +35,7 @@ export class UserController {
   }
 
   @Get('kakao-redirect')
-  async redirect(
-    @Query() data,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<object> {
+  async redirect(@Query() data, @Res({ passthrough: true }) res: Response) {
     const _host = 'https://kauth.kakao.com';
     const _client_id = this.configService.get('OAUTH_CLIENT_ID');
     const _redirect_uri = this.configService.get('OAUTH_REDIRECT_URI');
@@ -50,7 +47,7 @@ export class UserController {
       },
     };
     await this.kakaoService.login(_uri, _header);
-    const { name, email, gender, birthday, userId, kakaoAccessToken } =
+    const { name, email, gender, birthday, userId } =
       await this.kakaoService.getUserInfo();
     const {
       accessToken,
@@ -72,7 +69,6 @@ export class UserController {
    return {
       serverAccessToken: accessToken,
       serverRefreshToken: refreshToken,
-      kakaoAccessToken,
       userUri,
      };
   }

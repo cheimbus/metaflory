@@ -15,6 +15,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Product_category_list } from './Product.category.list';
 import { UserPurchaseList } from './User.purchase.list';
 import { UserRoungeStory } from './User.rounge.stories';
 
@@ -168,4 +169,10 @@ export class Product {
     (userRoungeStory) => userRoungeStory.productId,
   )
   userRoungeStory: UserRoungeStory[];
+
+  @OneToMany(
+    () => Product_category_list,
+    (productCategoryList) => productCategoryList.productId,
+  )
+  productCategoryList: Product_category_list[];
 }

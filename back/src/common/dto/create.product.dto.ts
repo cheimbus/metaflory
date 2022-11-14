@@ -1,5 +1,5 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, ValidateIf } from 'class-validator';
 import { Product } from 'src/entitis/Product';
 
 export class CreateProductDto extends PickType(Product, [
@@ -26,4 +26,22 @@ export class CreateProductDto extends PickType(Product, [
     required: true,
   })
   quantityMax: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    example: '카테고리 이름',
+    description: '카테고리 이름',
+    required: true,
+  })
+  categoryName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    example: '이 꽃은 이쁩니다.',
+    description: '카테고리 설명',
+    required: true,
+  })
+  categoryContent: string;
 }

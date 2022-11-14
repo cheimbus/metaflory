@@ -47,10 +47,9 @@ export class User {
     example: 'siu@naver.com',
     description:
       'OAuth 2.0 이메일, 최대 이메일 제외 20길이까지 가능, 또한 이메일 형식을 갖춰야 함',
-    required: true,
     nullable: true,
   })
-  @Column({ type: 'varchar', name: 'email', unique: true, nullable: true })
+  @Column({ type: 'varchar', name: 'email', default: null, nullable: true })
   email: string;
 
   @ValidateIf((object, value) => value !== null)
@@ -58,10 +57,9 @@ export class User {
   @ApiProperty({
     example: 'male, female',
     description: '남자 여자',
-    required: true,
     nullable: true,
   })
-  @Column({ type: 'varchar', name: 'gender', nullable: true })
+  @Column({ type: 'varchar', name: 'gender', default: null, nullable: true })
   gender: string;
 
   @ValidateIf((object, value) => value !== null)
@@ -69,10 +67,9 @@ export class User {
   @ApiProperty({
     example: '10.30',
     description: '생일',
-    required: true,
     nullable: true,
   })
-  @Column({ type: 'datetime', name: 'birthday', nullable: true })
+  @Column({ type: 'datetime', name: 'birthday', default: null, nullable: true })
   birthday: Date;
 
   @IsNotEmpty()
