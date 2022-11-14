@@ -1,7 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import dataSource from 'datasource';
+import { Category } from 'src/entitis/Category';
 import { Product } from 'src/entitis/Product';
+import { Product_category_list } from 'src/entitis/Product.category.list';
 
 /**
  * 사용자에게만 보여줄 상품정보, 관리자에게만 보여줄 상품정보 나눠서 개발
@@ -16,6 +18,8 @@ export class ProductService {
   quantityMax: number;
   quantityNow: number;
   imagePath: string;
+  categoryName: string;
+  categoryContent: string;
   constructor(private configService: ConfigService) {
     this.author = '';
     this.name = '';
@@ -25,6 +29,8 @@ export class ProductService {
     this.quantityMax;
     this.quantityNow;
     this.imagePath = '';
+    this.categoryName = '';
+    this.categoryContent = '';
   }
   async createProduct(data, files: Express.Multer.File[]): Promise<any> {
     const filesNames = [];
@@ -46,6 +52,8 @@ export class ProductService {
     this.flowerLanguage = data.data.flowerLanguage;
     this.quantityMax = data.data.quantityMax;
     this.imagePath = stringifiedImagePath;
+    this.categoryName = data.data.categoryName;
+    this.categoryContent = data.data.categoryContent;
     const exist = await dataSource
       .getRepository(Product)
       .createQueryBuilder('product')
@@ -58,6 +66,11 @@ export class ProductService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      const isCategory = await dataSource
+        .getRepository(Category)
+        .createQueryBuilder('category')
+        .where('category.name=:name', { name: this.categoryName })
+        .getOne();
       const product = new Product();
       product.author = this.author;
       product.name = this.name;
@@ -68,6 +81,16 @@ export class ProductService {
       product.quantityNow = this.quantityMax;
       product.imagePath = this.imagePath;
       await queryRunner.manager.getRepository(Product).save(product);
+      const category = new Category();
+      category.name = this.categoryName;
+      category.content = this.categoryContent;
+      await queryRunner.manager.getRepository(Category).save(category);
+      const productCategoryList = new Product_category_list();
+      productCategoryList.productId = product.id;
+      productCategoryList.categoryId = isCategory.id;
+      await queryRunner.manager
+        .getRepository(Product_category_list)
+        .save(productCategoryList);
       const imageInfos = [];
       for (let i = 0; i < files.length; i++) {
         imageInfos.push(
@@ -87,6 +110,8 @@ export class ProductService {
         flowerLanguage: this.flowerLanguage,
         quantityMax: this.quantityMax,
         quantityNow: this.quantityNow,
+        categoryName: this.categoryName,
+        categoryContent: this.categoryContent,
         imagePath: imageInfos,
       };
     } catch (err) {
@@ -124,21 +149,21 @@ export class ProductService {
         quantityMax: productInfo.quantityMax,
         quantityNow: productInfo.quantityNow,
         imagePath: parsedImagePath,
-        getCurrentProductInfoUri: `GET/ ${
+        getCurrentProductInfoUri: `${
           this.configService.get('TEST') === 'true'
             ? this.configService.get('TEST_PRODUCT_PATH')
             : this.configService.get('PRODUCT_PATH')
         }${id}/${this.configService.get('ADMIN_PATH')}/mo`,
-        deleteProductUri: `POST/ ${
+        deleteProductUri: `${
           this.configService.get('TEST') === 'true'
             ? this.configService.get('TEST_PRODUCT_PATH')
             : this.configService.get('PRODUCT_PATH')
-        }${id}/${this.configService.get('ADMIN_PATH')}de`,
-        restoreProductUri: `POST/ ${
+        }${id}/${this.configService.get('ADMIN_PATH')}/de`,
+        restoreProductUri: `${
           this.configService.get('TEST') === 'true'
             ? this.configService.get('TEST_PRODUCT_PATH')
             : this.configService.get('PRODUCT_PATH')
-        }${id}/${this.configService.get('ADMIN_PATH')}re`,
+        }${id}/${this.configService.get('ADMIN_PATH')}/re`,
       };
     } catch (err) {
       console.log(err);
@@ -167,7 +192,7 @@ export class ProductService {
       for (let i = 0; i < getProductInfos.length; i++) {
         const parsedImage = JSON.parse(getProductInfos[i].imagePath);
         productInfos.push({
-          viewUri: `GET/ ${
+          viewUri: `${
             this.configService.get('TEST') === 'true'
               ? this.configService.get('TEST_PRODUCT_PATH')
               : this.configService.get('PRODUCT_PATH')
@@ -188,6 +213,7 @@ export class ProductService {
     }
   }
 
+  // 상품 수정하기 전 원래있던 내용 가져오기 (관리자)
   async getProductInfoBeforeModify(id: number) {
     const {
       author,
@@ -206,7 +232,7 @@ export class ProductService {
     this.flowerLanguage = flowerLanguage;
     this.quantityMax = quantityMax;
     this.imagePath = imagePath;
-    const productUrl = `POST/ ${
+    const productUrl = `${
       this.configService.get('TEST') === 'true'
         ? this.configService.get('TEST_PRODUCT_PATH')
         : this.configService.get('PRODUCT_PATH')
@@ -223,6 +249,7 @@ export class ProductService {
     };
   }
 
+  // 상품 수정 (관리자)
   async modifyProductInfo(
     data,
     files: Express.Multer.File[],
@@ -295,6 +322,7 @@ export class ProductService {
     }
   }
 
+  // 상품 삭제 soft delete (관리자)
   async deleteProduct(id: number): Promise<any> {
     const queryRunner = await dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -321,6 +349,7 @@ export class ProductService {
     }
   }
 
+  // 상품 복구 (관리자)
   async restoreProduct(id: number): Promise<any> {
     const queryRunner = await dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -383,6 +412,7 @@ export class ProductService {
     }
   }
 
+  // 상품 목록 (사용자)
   async getAllProductForuser(): Promise<any> {
     const queryRunner = await dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -404,7 +434,7 @@ export class ProductService {
             this.configService.get('TEST') === 'true'
               ? this.configService.get('TEST_PRODUCT_PATH')
               : this.configService.get('PRODUCT_PATH')
-          }${getProductInfos[i].id}`,
+          }${getProductInfos[i].name}`,
           imagePath: parsedImagePath[0],
           name: getProductInfos[i].name,
           price: getProductInfos[i].price,

@@ -10,11 +10,19 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { Admin } from 'src/entitis/Admin';
+import { Product_category_list } from 'src/entitis/Product.category.list';
+import { Category } from 'src/entitis/Category';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forFeature([User, Product, Admin]),
+    TypeOrmModule.forFeature([
+      User,
+      Product,
+      Admin,
+      Product_category_list,
+      Category,
+    ]),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveStaticOptions: {
