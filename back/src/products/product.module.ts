@@ -12,6 +12,7 @@ import { join } from 'path';
 import { Admin } from 'src/entitis/Admin';
 import { Product_category_list } from 'src/entitis/Product.category.list';
 import { Category } from 'src/entitis/Category';
+import { Product_author } from 'src/entitis/Product.author';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { Category } from 'src/entitis/Category';
       Admin,
       Product_category_list,
       Category,
+      Product_author,
     ]),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),

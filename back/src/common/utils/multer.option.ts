@@ -1,24 +1,9 @@
 import * as multer from 'multer';
 import * as path from 'path';
-import * as fs from 'fs';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { BadRequestException } from '@nestjs/common';
 
-const createFolder = () => {
-  try {
-    fs.mkdirSync(path.join(__dirname, '..', `uploads`));
-  } catch (error) {
-    console.log(error);
-  }
-  try {
-    fs.mkdirSync(path.join(__dirname, '..', `uploads`));
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 const storage = (): multer.StorageEngine => {
-  createFolder();
   return multer.diskStorage({
     destination(req, file, cb) {
       //* 어디에 저장할 지
@@ -28,7 +13,12 @@ const storage = (): multer.StorageEngine => {
     filename(req, file, cb) {
       //* 어떤 이름으로 올릴 지
       const ext = path.extname(file.originalname);
-      if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') {
+      if (
+        ext !== '.jpg' &&
+        ext !== '.jpeg' &&
+        ext !== '.png' &&
+        ext !== '.gif'
+      ) {
         throw new BadRequestException('잘못된 요청입니다.');
       }
       const fileName = `${path.basename(

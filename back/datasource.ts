@@ -12,6 +12,7 @@ import { User } from 'src/entitis/User';
 import { Admin } from 'src/entitis/Admin';
 import { Category } from 'src/entitis/Category';
 import { Product_category_list } from 'src/entitis/Product.category.list';
+import { Product_author } from 'src/entitis/Product.author';
 
 dotenv.config();
 const dataSource = new DataSource({
@@ -45,6 +46,7 @@ const dataSource = new DataSource({
     Admin,
     Category,
     Product_category_list,
+    Product_author,
   ],
   migrations: [path.join(__dirname, 'src/migrations/*')],
   charset: 'utf8mb4',

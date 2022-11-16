@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import dataSource from 'datasource';
+import { Product_author } from 'src/entitis/Product.author';
 import { Category } from 'src/entitis/Category';
 import { Product } from 'src/entitis/Product';
 import { Product_category_list } from 'src/entitis/Product.category.list';
@@ -66,13 +67,13 @@ export class ProductService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const isCategory = await dataSource
-        .getRepository(Category)
-        .createQueryBuilder('category')
-        .where('category.name=:name', { name: this.categoryName })
+      const existAuthor = await dataSource.manager
+        .getRepository(Product_author)
+        .createQueryBuilder()
+        .where('name=:name', { name: this.author })
         .getOne();
       const product = new Product();
-      product.author = this.author;
+      product.authorId = existAuthor.id;
       product.name = this.name;
       product.price = this.price;
       product.content = this.content;
@@ -80,27 +81,35 @@ export class ProductService {
       product.quantityMax = this.quantityMax;
       product.quantityNow = this.quantityMax;
       product.imagePath = this.imagePath;
-      await queryRunner.manager.getRepository(Product).save(product);
-      const category = new Category();
-      category.name = this.categoryName;
-      category.content = this.categoryContent;
-      await queryRunner.manager.getRepository(Category).save(category);
+      const createProduct = await queryRunner.manager
+        .getRepository(Product)
+        .save(product);
+      const existCategory = await queryRunner.manager
+        .getRepository(Category)
+        .createQueryBuilder()
+        .where('name=:name', { name: this.categoryName })
+        .getOne();
+      if (!existCategory) {
+        const category = new Category();
+        category.name = this.categoryName;
+        category.content = this.categoryContent;
+        const createCategory = await queryRunner.manager
+          .getRepository(Category)
+          .save(category);
+        const productCategoryList = new Product_category_list();
+        productCategoryList.productId = createProduct.id;
+        productCategoryList.categoryId = createCategory.id;
+        await queryRunner.manager
+          .getRepository(Product_category_list)
+          .save(productCategoryList);
+      }
       const productCategoryList = new Product_category_list();
-      productCategoryList.productId = product.id;
-      productCategoryList.categoryId = isCategory.id;
+      productCategoryList.productId = createProduct.id;
+      productCategoryList.categoryId = existCategory.id;
       await queryRunner.manager
         .getRepository(Product_category_list)
         .save(productCategoryList);
-      const imageInfos = [];
-      for (let i = 0; i < files.length; i++) {
-        imageInfos.push(
-          `${
-            this.configService.get('TEST') === 'true'
-              ? this.configService.get('TEST_COMMON_PATH')
-              : this.configService.get('COMMON_PATH')
-          }${files[i].filename}`,
-        );
-      }
+
       await queryRunner.commitTransaction();
       return {
         author: this.author,
@@ -112,7 +121,7 @@ export class ProductService {
         quantityNow: this.quantityNow,
         categoryName: this.categoryName,
         categoryContent: this.categoryContent,
-        imagePath: imageInfos,
+        imagePath: filesNames,
       };
     } catch (err) {
       console.log(err);
@@ -123,14 +132,14 @@ export class ProductService {
   }
 
   // 상품 뷰 (관리자)
-  async getOneProductToAdmin(id: number) {
+  async getOneProductToAdmin(name: string) {
     const queryRunner = await dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     const productInfo = await queryRunner.manager
       .getRepository(Product)
       .createQueryBuilder('product')
-      .where('product.id=:id', { id })
+      .where('product.name=:name', { name })
       .andWhere('product.isDeleted=:isDeleted', { isDeleted: false })
       .getOne();
     if (!productInfo) {
@@ -138,9 +147,14 @@ export class ProductService {
     }
     try {
       const parsedImagePath = JSON.parse(productInfo.imagePath);
+      const authorInfo = await queryRunner.manager
+        .getRepository(Product_author)
+        .createQueryBuilder()
+        .where('id=:id', { id: productInfo.authorId })
+        .getOne();
       await queryRunner.commitTransaction();
       return {
-        author: productInfo.author,
+        author: authorInfo.name,
         isSoldout: productInfo.isSoldout,
         name: productInfo.name,
         price: productInfo.price,
@@ -153,17 +167,17 @@ export class ProductService {
           this.configService.get('TEST') === 'true'
             ? this.configService.get('TEST_PRODUCT_PATH')
             : this.configService.get('PRODUCT_PATH')
-        }${id}/${this.configService.get('ADMIN_PATH')}/mo`,
+        }${name}/${this.configService.get('ADMIN_PATH')}/mo`,
         deleteProductUri: `${
           this.configService.get('TEST') === 'true'
             ? this.configService.get('TEST_PRODUCT_PATH')
             : this.configService.get('PRODUCT_PATH')
-        }${id}/${this.configService.get('ADMIN_PATH')}/de`,
+        }${name}/${this.configService.get('ADMIN_PATH')}/de`,
         restoreProductUri: `${
           this.configService.get('TEST') === 'true'
             ? this.configService.get('TEST_PRODUCT_PATH')
             : this.configService.get('PRODUCT_PATH')
-        }${id}/${this.configService.get('ADMIN_PATH')}/re`,
+        }${name}/${this.configService.get('ADMIN_PATH')}/re`,
       };
     } catch (err) {
       console.log(err);
@@ -196,7 +210,7 @@ export class ProductService {
             this.configService.get('TEST') === 'true'
               ? this.configService.get('TEST_PRODUCT_PATH')
               : this.configService.get('PRODUCT_PATH')
-          }${getProductInfos[i].id}/${this.configService.get('ADMIN_PATH')}`,
+          }${getProductInfos[i].name}/${this.configService.get('ADMIN_PATH')}`,
           imagePath: `${parsedImage[0]}`,
           name: getProductInfos[i].name,
           price: getProductInfos[i].price,
@@ -214,7 +228,7 @@ export class ProductService {
   }
 
   // 상품 수정하기 전 원래있던 내용 가져오기 (관리자)
-  async getProductInfoBeforeModify(id: number) {
+  async getProductInfoBeforeModify(_name: string) {
     const {
       author,
       name,
@@ -223,7 +237,7 @@ export class ProductService {
       flowerLanguage,
       quantityMax,
       imagePath,
-    } = await this.getOneProductToAdmin(id);
+    } = await this.getOneProductToAdmin(_name);
 
     this.author = author;
     this.name = name;
@@ -236,7 +250,7 @@ export class ProductService {
       this.configService.get('TEST') === 'true'
         ? this.configService.get('TEST_PRODUCT_PATH')
         : this.configService.get('PRODUCT_PATH')
-    }${id}/${this.configService.get('ADMIN_PATH')}/mo`;
+    }${_name}/${this.configService.get('ADMIN_PATH')}/mo`;
     return {
       author,
       name,
@@ -253,7 +267,7 @@ export class ProductService {
   async modifyProductInfo(
     data,
     files: Express.Multer.File[],
-    id: number,
+    _name: string,
   ): Promise<any> {
     const queryRunner = await dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -311,7 +325,7 @@ export class ProductService {
           quantityMax: this.quantityMax,
           imagePath: this.imagePath,
         })
-        .where('id=:id', { id })
+        .where('name=:name', { name: _name })
         .execute();
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -323,22 +337,31 @@ export class ProductService {
   }
 
   // 상품 삭제 soft delete (관리자)
-  async deleteProduct(id: number): Promise<any> {
+  async deleteProduct(_name: string): Promise<any> {
     const queryRunner = await dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+    const exist = await dataSource.manager
+      .getRepository(Product)
+      .createQueryBuilder('product')
+      .where('product.name=:name', { name: _name })
+      .andWhere('product.isDeleted=:isDeleted', { isDeleted: false })
+      .getOne();
+    if (!exist) {
+      throw new BadRequestException('존재하지 않습니다.');
+    }
     try {
       await dataSource
         .createQueryBuilder()
         .update(Product)
         .set({ isDeleted: true })
-        .where('id = :id', { id })
+        .where('name=:name', { name: _name })
         .execute();
       await dataSource.manager
         .getRepository(Product)
         .createQueryBuilder()
         .softDelete()
-        .where('id = :id', { id })
+        .where('name=:name', { name: _name })
         .execute();
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -350,7 +373,7 @@ export class ProductService {
   }
 
   // 상품 복구 (관리자)
-  async restoreProduct(id: number): Promise<any> {
+  async restoreProduct(_name: string): Promise<any> {
     const queryRunner = await dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -359,13 +382,13 @@ export class ProductService {
         .createQueryBuilder()
         .update(Product)
         .set({ isDeleted: false })
-        .where('id = :id', { id })
+        .where('name=:name', { name: _name })
         .execute();
       await dataSource.manager
         .getRepository(Product)
         .createQueryBuilder()
         .restore()
-        .where('id = :id', { id })
+        .where('name=:name', { name: _name })
         .execute();
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -391,10 +414,27 @@ export class ProductService {
       throw new BadRequestException('해당 정보가 없습니다.');
     }
     try {
+      const authorInfo = await queryRunner.manager
+        .getRepository(Product_author)
+        .createQueryBuilder()
+        .where('id=:id', { id: productInfo.authorId })
+        .getOne();
+      const getHits = await queryRunner.manager
+        .getRepository(Product_author)
+        .createQueryBuilder('author')
+        .where('author.name=:name', { name: authorInfo.name })
+        .getOne();
+      const addHits = getHits.hits + 1;
+      await dataSource
+        .createQueryBuilder()
+        .update(Product_author)
+        .set({ hits: addHits })
+        .where('name=:name', { name: authorInfo.name })
+        .execute();
       const parsedImagePath = JSON.parse(productInfo.imagePath);
       await queryRunner.commitTransaction();
       return {
-        author: productInfo.author,
+        author: authorInfo.name,
         isSoldout: productInfo.isSoldout,
         name: productInfo.name,
         price: productInfo.price,

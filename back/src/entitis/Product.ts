@@ -11,10 +11,13 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Product_author } from './Product.author';
 import { Product_category_list } from './Product.category.list';
 import { UserPurchaseList } from './User.purchase.list';
 import { UserRoungeStory } from './User.rounge.stories';
@@ -27,16 +30,6 @@ export class Product {
   })
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
-
-  @IsNotEmpty()
-  @IsString()
-  @ApiProperty({
-    example: '시우',
-    description: '작가명',
-    required: true,
-  })
-  @Column({ type: 'varchar', name: 'author' })
-  author: string;
 
   @IsNotEmpty()
   @IsBoolean()
@@ -175,4 +168,11 @@ export class Product {
     (productCategoryList) => productCategoryList.productId,
   )
   productCategoryList: Product_category_list[];
+
+  @ManyToOne(() => Product_author, (productAuthor) => productAuthor.product, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn([{ name: 'author_id', referencedColumnName: 'id' }])
+  authorId: number;
 }

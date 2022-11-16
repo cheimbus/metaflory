@@ -32,6 +32,16 @@ export class UserPurchaseList {
   @Column({ type: 'int', name: 'price' })
   price: number;
 
+  @IsNotEmpty()
+  @IsNumber()
+  @ApiProperty({
+    example: '카드, 메타마스크',
+    description: '구매 유형',
+    required: true,
+  })
+  @Column({ type: 'varchar', name: 'type' })
+  type: string;
+
   @CreateDateColumn({ type: 'datetime', name: 'created_at' })
   createdAt: Date;
 
@@ -40,14 +50,14 @@ export class UserPurchaseList {
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'product_id', referencedColumnName: 'id' }])
-  productId: Product;
+  productId: number;
 
   @ManyToOne(() => User, (user) => user.userPurchaseList, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
-  userId: User;
+  userId: number;
 
   @OneToMany(() => UserSendList, (userSendList) => userSendList.purchaseListId)
   userSendList: UserSendList[];

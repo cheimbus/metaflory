@@ -17,7 +17,7 @@ export class AdminsController {
   async loginAdmin(
     @Res({ passthrough: true }) res: Response,
     @Body() data: AdminLoginDto,
-  ) { 
+  ) {
     const { accessToken, accessTokenCookieOption } =
       await this.adminService.loginAdmin(data.email, data.password);
     res.cookie('Authorization', accessToken, accessTokenCookieOption);

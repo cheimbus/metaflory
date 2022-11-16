@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
   Post,
   UploadedFiles,
   UseGuards,
@@ -12,7 +11,6 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateProductDto } from 'src/common/dto/create.product.dto';
 import { ModifyProductDto } from 'src/common/dto/modify.product.dto';
-import { PositivePipe } from 'src/common/pipes/positiveInt.pipe';
 import { multerOptions } from 'src/common/utils/multer.option';
 import { AdminAuthGuard } from 'src/jwt/admin.gurad';
 import { ProductService } from './product.service';
@@ -39,11 +37,9 @@ export class ProductController {
 
   // 상품 뷰 (관리자)
   @UseGuards(AdminAuthGuard)
-  @Get(':id/admin')
-  async getOneProduct(
-    @Param('id', PositivePipe, ParseIntPipe) id: number,
-  ): Promise<any> {
-    return this.productService.getOneProductToAdmin(id);
+  @Get(':name/admin')
+  async getOneProduct(@Param('name') name: string): Promise<any> {
+    return this.productService.getOneProductToAdmin(name);
   }
 
   // 상품 목록 (관리자)
@@ -55,37 +51,35 @@ export class ProductController {
 
   // 상품 수정하기 전 이전 데이터 가져오기 (관리자)
   @UseGuards(AdminAuthGuard)
-  @Get(':id/admin/mo')
-  async getProductInfo(
-    @Param('id', ParseIntPipe, PositivePipe) id: number,
-  ): Promise<any> {
-    return this.productService.getProductInfoBeforeModify(id);
+  @Get(':name/admin/mo')
+  async getProductInfo(@Param('name') name: string): Promise<any> {
+    return this.productService.getProductInfoBeforeModify(name);
   }
 
   // 상품 수정 (관리자)
   @UseGuards(AdminAuthGuard)
   @UseInterceptors(FilesInterceptor('image', null, multerOptions()))
-  @Post(':id/admin/mo')
+  @Post(':name/admin/mo')
   async modifyProduct(
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @Param('id') id: number,
+    @Param('name') name: string,
     @Body() data: ModifyProductDto,
   ) {
-    return await this.productService.modifyProductInfo({ data }, files, id);
+    return await this.productService.modifyProductInfo({ data }, files, name);
   }
 
   // 상품 삭제 (관리자) soft delete
   @UseGuards(AdminAuthGuard)
-  @Post(':id/admin/de')
-  async deleteProduct(@Param('id', ParseIntPipe, PositivePipe) id: number) {
-    return await this.productService.deleteProduct(id);
+  @Post(':name/admin/de')
+  async deleteProduct(@Param('name') name: string) {
+    return await this.productService.deleteProduct(name);
   }
 
   // 상품 삭제 복구 (관리자)
   @UseGuards(AdminAuthGuard)
-  @Post(':id/admin/re')
-  async restoreProduct(@Param('id', ParseIntPipe, PositivePipe) id: number) {
-    return await this.productService.restoreProduct(id);
+  @Post(':name/admin/re')
+  async restoreProduct(@Param('name') name: string) {
+    return await this.productService.restoreProduct(name);
   }
 
   // 상품 뷰 (사용자)
@@ -99,4 +93,6 @@ export class ProductController {
   async getAllProductForuser(): Promise<any> {
     return await this.productService.getAllProductForuser();
   }
+
+  //
 }

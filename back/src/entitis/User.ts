@@ -12,7 +12,6 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { UserPurchaseList } from './User.purchase.list';
 import { UserRounge } from './User.rounge';
@@ -84,9 +83,6 @@ export class User {
 
   @CreateDateColumn({ type: 'datetime', name: 'created_at' })
   createdAt: Date;
-
-  @UpdateDateColumn({ type: 'datetime', name: 'updated_at' })
-  updatedAt: Date;
 
   @OneToMany(
     () => UserPurchaseList,

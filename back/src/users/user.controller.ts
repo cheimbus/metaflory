@@ -1,18 +1,7 @@
-import {
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-  Query,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { User } from 'src/common/decorators/user.request.decorator';
-import { PositivePipe } from 'src/common/pipes/positiveInt.pipe';
-import { JwtAccessTokenAuthGuard } from 'src/jwt/jwt.access.guard';
 import { jwtRefreshTokenAuthGuard } from 'src/jwt/jwt.refresh.guard';
 import { KakaoService, UserService } from './user.service';
 
@@ -58,19 +47,19 @@ export class UserController {
     await this.userService.createServerId(userId, refreshToken);
     await this.userService.setUserInfo(name, email, gender, birthday);
     await this.userService.setRefreshToken();
-    const userUri = `${
+    const mypage = `${
       this.configService.get('TEST') === 'true'
         ? this.configService.get('TEST_COMMON_PATH')
         : this.configService.get('COMMON_PATH')
-    }users/${userId}`;
+    }mypage`;
     res.cookie('Authorization', accessToken, accessTokenCookieOption);
     res.cookie('RefreshToken', refreshToken, refreshTokenCookieOption);
     // 일단 테스트하기 쉽게 리턴으로 엑세스토큰
-   return {
+    return {
       serverAccessToken: accessToken,
       serverRefreshToken: refreshToken,
-      userUri,
-     };
+      mypage,
+    };
   }
 
   @UseGuards(jwtRefreshTokenAuthGuard)
@@ -101,15 +90,5 @@ export class UserController {
   @Post('kakao-log-delete')
   async kakaoLogDelete() {
     return await this.kakaoService.deleteLog();
-  }
-
-  // 유저정보 가져오기
-  @UseGuards(JwtAccessTokenAuthGuard)
-  @Get(':id')
-  async getUserInfo(
-    @Param('id', ParseIntPipe, PositivePipe) id: number,
-    @User() user,
-  ): Promise<any> {
-    return await this.userService.getUserInfo(id, user.id);
   }
 }

@@ -47,7 +47,7 @@ export class UserSendList {
   @IsNotEmpty()
   @IsString()
   @MinLength(1)
-  @MaxLength(10)
+  @MaxLength(30)
   @ApiProperty({
     example: '황시우',
     description: '보내는 사람의 이름 또는 닉네임',
@@ -59,7 +59,7 @@ export class UserSendList {
   @IsNotEmpty()
   @IsString()
   @MinLength(1)
-  @MaxLength(10)
+  @MaxLength(30)
   @ApiProperty({
     example: '박기완',
     description: '받는 사람의 이름 또는 닉네임',

@@ -10,7 +10,7 @@ declare const module: any;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get<ConfigService>(ConfigService);
-  app.enableCors(); //실섭에선 url같을테니 빼기 
+  app.enableCors(); //실섭에선 url같을테니 빼기
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new successInterceptor());
   app.useGlobalPipes(new ValidationPipe());

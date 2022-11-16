@@ -204,20 +204,6 @@ export class UserService {
     this.gender = gender;
     this.birthday = birtday;
   }
-
-  // 유저 정보 가져오기
-  async getUserInfo(id: number, userId: number): Promise<any> {
-    if (id !== userId) {
-      throw new UnauthorizedException('잘못된 접근입니다.');
-    }
-    const { name, email, gender, birthday } = {
-      name: this.name,
-      email: this.email,
-      gender: this.gender,
-      birthday: this.birthday,
-    };
-    return { name, email, gender, birthday };
-  }
 }
 
 @Injectable()
