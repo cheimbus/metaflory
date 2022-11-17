@@ -1,37 +1,58 @@
 import axios from 'axios';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import "../../css/loginPage.css";
 import { SERVER_URL } from '../../utils/Common';
 import {stringify} from 'querystring';
+import { useQuery } from '@tanstack/react-query';
+import { useCookies} from 'react-cookie';
 
 
 export default function LoginPage({thirdparty}){
+    const navigate = useNavigate();
+    const [cookies, setCookie] = useCookies(['lTkn']);
 
-    const [code, setCode] = useState('');
+    const {isLoading, isError,data} = useQuery({
+        queryKey:['login'],
+        queryFn: ()=>{
+            console.log("windowlocationserarch",window.location.search);
+            if(thirdparty=="kakao"){
+                const params = new URLSearchParams(window.location.search); 
+                const _kakaoToken = params.get('code');
+                if(_kakaoToken.length<=0) return; 
+                return axios({
+                    url:SERVER_URL+"/users/kakao-redirect?"+stringify({code:_kakaoToken, state:params.get('state')}),
+                    method:'GET',
+                    timeout:10000
+                }).then((res)=>{ 
+                    setCookie("lTkn",res.data.data.serverAccessToken, {path:"/"});
+                    console.log(res); 
+                    navigate("/",{replace:true}); 
+                    return 'GOOD';
+                }).catch((err)=>{
+                    alert('로그인 실패');
+                    console.log(err);
+                    navigate("/login",{replace:true}); 
+                    return 'ERROR';
+                })
+               
+            } else{
+                return 'ERROR';
+            }
+        },
+        staleTime:Infinity,
+    })
 
-    useEffect(()=>{
-        console.log("useEffect...");
-        console.log("code..",code);
-        if(thirdparty=="kakao" && code==''){
-            const params = new URLSearchParams(window.location.search);
-            console.log("useEffect",params);
-            const _kakaoToken = params.get('code');
-            if(_kakaoToken.length<=0) return;
-            setCode(_kakaoToken);
-            console.log("token ",_kakaoToken);
-            axios({
-                url:SERVER_URL+"/users/kakao-redirect?"+stringify({code:_kakaoToken, state:params.get('state')}),
-                method:'GET'
-            }).then((res)=>{
-                console.log(res);
-            }).catch((err)=>{
-                console.log(err);
-            })
-
+    if(isLoading){
+        if(thirdparty=="kakao"){
+            return <span>Login....</span>
         }
-    },[] );
+    }
+    if(isError){
+        navigate("/login",{replace:true});
+    }
+ 
 
 
     function kakaoLogin(){

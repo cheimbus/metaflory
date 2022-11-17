@@ -1,11 +1,36 @@
 import React, {useState, useEffect} from 'react';
-import {Link} from 'react-router-dom';
+import {Link} from 'react-router-dom'; 
 import Navbar from './Navbar';
+import {useCookies} from 'react-cookie';
+import { GET } from '../utils/HttpUtil';
+import { SERVER_URL } from '../utils/Common';
 
 
 export default function Header(){
 
-    const {login, setLogin} = useState(false);  
+    const [cookies, setCookie, removeCookie] = useCookies(['lTkn']);
+    const [login, setLogin] = useState(false);  
+    useEffect(()=>{
+        const accessToken = cookies.lTkn;
+        console.log("accessToken",accessToken);
+        if(!accessToken) {  setLogin(false); return;}
+        GET({url:SERVER_URL+"/mypage", token:accessToken}).then((res)=>{
+            console.log(res);
+            if(res.data && res.data.data && res.data.success){
+                console.log("Login");
+                setLogin(true);
+            } else{
+                console.log("NOt Login");
+                setLogin(false);
+                removeCookie('lTkn');
+            } 
+        }).catch((err)=>{
+            setLogin(false);
+            removeCookie('lTkn');
+        })
+    });
+
+    
 
     return (
         <header>

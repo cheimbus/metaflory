@@ -1,8 +1,10 @@
 import React from 'react'
 import { Banner } from '../../components/Banner';
-import { CategoryTab } from '../../components/CategoryTab';
+import { CategoryTab } from '../../components/CategoryTab'; 
 
 export default function MainPage(){
+
+
     return (
         <div className="main">
             <Banner/>
