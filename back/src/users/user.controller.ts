@@ -1,10 +1,12 @@
 import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { User } from 'src/common/decorators/user.request.decorator';
 import { jwtRefreshTokenAuthGuard } from 'src/jwt/jwt.refresh.guard';
 import { KakaoService, UserService } from './user.service';
 
+@ApiTags('사용자')
 @Controller('users')
 export class UserController {
   constructor(

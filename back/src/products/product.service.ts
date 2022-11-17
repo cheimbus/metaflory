@@ -102,14 +102,14 @@ export class ProductService {
         await queryRunner.manager
           .getRepository(Product_category_list)
           .save(productCategoryList);
+      } else {
+        const productCategoryList = new Product_category_list();
+        productCategoryList.productId = createProduct.id;
+        productCategoryList.categoryId = existCategory.id;
+        await queryRunner.manager
+          .getRepository(Product_category_list)
+          .save(productCategoryList);
       }
-      const productCategoryList = new Product_category_list();
-      productCategoryList.productId = createProduct.id;
-      productCategoryList.categoryId = existCategory.id;
-      await queryRunner.manager
-        .getRepository(Product_category_list)
-        .save(productCategoryList);
-
       await queryRunner.commitTransaction();
       return {
         author: this.author,
@@ -408,33 +408,23 @@ export class ProductService {
       .getRepository(Product)
       .createQueryBuilder('product')
       .where('product.name=:name', { name })
-      .andWhere('product.isDeleted=:isDeleted', { isDeleted: false })
+      .leftJoinAndSelect('product.AuthorId', 'productAuthor')
       .getOne();
     if (!productInfo) {
       throw new BadRequestException('해당 정보가 없습니다.');
     }
     try {
-      const authorInfo = await queryRunner.manager
-        .getRepository(Product_author)
-        .createQueryBuilder()
-        .where('id=:id', { id: productInfo.authorId })
-        .getOne();
-      const getHits = await queryRunner.manager
-        .getRepository(Product_author)
-        .createQueryBuilder('author')
-        .where('author.name=:name', { name: authorInfo.name })
-        .getOne();
-      const addHits = getHits.hits + 1;
+      const getHits = productInfo.AuthorId.hits + 1;
       await dataSource
         .createQueryBuilder()
         .update(Product_author)
-        .set({ hits: addHits })
-        .where('name=:name', { name: authorInfo.name })
+        .set({ hits: getHits })
+        .where('name=:name', { name: productInfo.AuthorId.name })
         .execute();
       const parsedImagePath = JSON.parse(productInfo.imagePath);
       await queryRunner.commitTransaction();
       return {
-        author: authorInfo.name,
+        author: productInfo.AuthorId.name,
         isSoldout: productInfo.isSoldout,
         name: productInfo.name,
         price: productInfo.price,

@@ -1,6 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { MainService } from './main.service';
 
+@ApiTags('메인페이지')
 @Controller('main')
 export class MainController {
   constructor(private mainService: MainService) {}

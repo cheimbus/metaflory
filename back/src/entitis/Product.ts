@@ -31,6 +31,9 @@ export class Product {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
+  @Column('int', { name: 'author_id', nullable: true })
+  authorId: number | null;
+
   @IsNotEmpty()
   @IsBoolean()
   @ApiProperty({
@@ -174,5 +177,5 @@ export class Product {
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'author_id', referencedColumnName: 'id' }])
-  authorId: number;
+  AuthorId: Product_author;
 }

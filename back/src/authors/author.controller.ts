@@ -8,11 +8,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthorSetInfoDto } from 'src/common/dto/author.set.info.dto';
 import { multerOptions } from 'src/common/utils/multer.option';
 import { AdminAuthGuard } from 'src/jwt/admin.gurad';
 import { AuthorService } from './author.service';
 
+@ApiTags('작가')
 @Controller('authors')
 export class AuthorController {
   constructor(private authorService: AuthorService) {}

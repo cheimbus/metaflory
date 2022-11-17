@@ -64,4 +64,38 @@ export class AdminsService {
     };
     return { accessToken, accessTokenCookieOption };
   }
+
+  async logoutAdmin(id: number) {
+    const queryRunner = await dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const exist = await queryRunner.manager
+        .getRepository(Admin)
+        .createQueryBuilder()
+        .where('id=:id', { id })
+        .getOne();
+      if (!exist) {
+        throw new UnauthorizedException('잘못된 접근입니다.');
+      }
+      await queryRunner.commitTransaction();
+      return '로그아웃 완료';
+    } catch (err) {
+      console.log(err);
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async getCookieOptionForLogOut() {
+    return {
+      accessTokenCookieOption: {
+        domain: this.configService.get('COOKIE_OPTION_DOMAIN'),
+        path: this.configService.get('COOKIE_OPTION_PATH'),
+        httpOnly: this.configService.get('COOKIE_OPTION_HTTPONLY'),
+        maxAge: 0,
+      },
+    };
+  }
 }

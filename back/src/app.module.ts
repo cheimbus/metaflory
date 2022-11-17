@@ -1,7 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { KakaoLogin, MyService } from './app.service';
+// import { AppController } from './app.controller';
+// import { KakaoLogin, MyService } from './app.service';
 import { UserModule } from './users/user.module';
 import { ProductModule } from './products/product.module';
 import { RoungeController } from './rounges/rounge.controller';
@@ -86,7 +86,7 @@ import { MainModule } from './main/main.module';
     AuthorModule,
     MainModule,
   ],
-  controllers: [AppController, RoungeController],
-  providers: [MyService, KakaoLogin, RoungeService],
+  controllers: [RoungeController],
+  providers: [RoungeService],
 })
 export class AppModule {}

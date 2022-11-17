@@ -40,6 +40,6 @@ export class Product_author {
   @Column({ type: 'varchar', name: 'image_path' })
   imagePath: string;
 
-  @OneToMany(() => Product, (product) => product.authorId)
-  product: Product[];
+  @OneToMany(() => Product, (product) => product.AuthorId)
+  product: Product;
 }

@@ -9,6 +9,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateProductDto } from 'src/common/dto/create.product.dto';
 import { ModifyProductDto } from 'src/common/dto/modify.product.dto';
 import { multerOptions } from 'src/common/utils/multer.option';
@@ -18,7 +19,7 @@ import { ProductService } from './product.service';
 /**
  * 사용자에게만 보여줄 상품정보, 관리자에게만 보여줄 상품정보 나눠서 개발
  */
-
+@ApiTags('상품 CRUD')
 @Controller('products')
 export class ProductController {
   constructor(private productService: ProductService) {}
