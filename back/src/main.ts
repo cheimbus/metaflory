@@ -9,6 +9,7 @@ import {
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/http-exception.filter';
 import { successInterceptor } from './common/success.interceptor';
+import { TimeoutInterceptor } from './common/timeout.intercepotr';
 
 declare const module: any;
 
@@ -18,6 +19,7 @@ async function bootstrap() {
   app.enableCors(); //실섭에선 url같을테니 빼기
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new successInterceptor());
+  app.useGlobalInterceptors(new TimeoutInterceptor());
   app.useGlobalPipes(new ValidationPipe());
   const swaggerCustomOptions: SwaggerCustomOptions = {
     swaggerOptions: {

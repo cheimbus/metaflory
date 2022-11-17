@@ -93,9 +93,18 @@ export class AuthorService {
     }
   }
 
-  async getAuthorProduct(name: string): Promise<any> {
+  async getAuthorProducts(name: string): Promise<any> {
     const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+    const products = await queryRunner.manager
+      .getRepository(Product_author)
+      .createQueryBuilder('author')
+      .where('author.name=:name', { name })
+      .leftJoinAndSelect('author.product', 'product')
+      .getOne();
+    console.log(products.product);
+    const authorWithProducts = [];
+    // for (let i = 0; i < products; i++) {}
   }
 }

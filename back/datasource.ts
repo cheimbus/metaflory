@@ -53,6 +53,8 @@ const dataSource = new DataSource({
   migrationsRun: true,
   synchronize: false,
   logging: true,
+  connectTimeout: 1000,
+  extra: { connectionLimit: 10 },
 });
 
 export default dataSource;

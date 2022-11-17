@@ -34,6 +34,7 @@ export class AuthorController {
   /**
    * 작가 리스트 (사용자)
    * 조회수에 따라서 순서 정함
+   * 클릭 시 해당 작가의 상품 리스트를 보여줌
    */
   @Get('authors')
   async getAuthorList(): Promise<any> {
@@ -42,6 +43,6 @@ export class AuthorController {
 
   @Get('author/:name/products')
   async getAuthorProduct(@Param('name') name: string) {
-    return await this.authorService.getAuthorProduct(name);
+    return await this.authorService.getAuthorProducts(name);
   }
 }

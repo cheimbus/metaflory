@@ -73,6 +73,8 @@ import { MainModule } from './main/main.module';
           synchronize: false,
           autoLoadEntities: true,
           logging: true,
+          connectTimeout: 1000,
+          extra: { connectionLimit: 10 },
         };
       },
     }),
