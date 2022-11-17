@@ -55,8 +55,10 @@ export class AuthorService {
     }
   }
 
-  // 작가 조회수에 따라 순위 매김
-  //
+  /**
+   * 작가 조회수에 따라 순위 매김
+   * 해당 작가를 클릭하면 작가의 상품들을 나열 해 놓아야 함
+   */
   async getAuthorList(): Promise<any> {
     const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -74,6 +76,11 @@ export class AuthorService {
         sortedInfo.push({
           name: sorted[i].name,
           imagePath: sorted[i].imagePath,
+          authorListUri: `${
+            this.configService.get('TEST') === 'true'
+              ? this.configService.get('TEST_COMMON_PATH')
+              : this.configService.get('COMMON_PATH')
+          }author/${sorted[i].name}/products`,
         });
       }
       await queryRunner.commitTransaction();
@@ -84,5 +91,11 @@ export class AuthorService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async getAuthorProduct(name: string): Promise<any> {
+    const queryRunner = dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
   }
 }

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   UploadedFiles,
   UseGuards,
@@ -15,13 +16,13 @@ import { AdminAuthGuard } from 'src/jwt/admin.gurad';
 import { AuthorService } from './author.service';
 
 @ApiTags('작가')
-@Controller('authors')
+@Controller()
 export class AuthorController {
   constructor(private authorService: AuthorService) {}
 
   // 작가 정보, 대표이미지 생성 및 수정
   @UseGuards(AdminAuthGuard)
-  @Post()
+  @Post('authors')
   @UseInterceptors(FilesInterceptor('image', null, multerOptions()))
   async setAuthorInfo(
     @UploadedFiles() files: Array<Express.Multer.File>,
@@ -34,8 +35,13 @@ export class AuthorController {
    * 작가 리스트 (사용자)
    * 조회수에 따라서 순서 정함
    */
-  @Get('list')
+  @Get('authors')
   async getAuthorList(): Promise<any> {
     return await this.authorService.getAuthorList();
+  }
+
+  @Get('author/:name/products')
+  async getAuthorProduct(@Param('name') name: string) {
+    return await this.authorService.getAuthorProduct(name);
   }
 }

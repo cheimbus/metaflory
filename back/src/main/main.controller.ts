@@ -12,7 +12,7 @@ export class MainController {
    * 조회수에 따라서 순서 정함 3가지만 불러오기
    * 각각 작가의 작품들이 나열된 상품들 불러오는 uri도 보내주여 함
    */
-  @Get('authors/list')
+  @Get('author/list')
   async getAuthorListForMain(): Promise<any> {
     return await this.mainService.getAuthorListForMain();
   }

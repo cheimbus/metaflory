@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import dataSource from 'datasource';
 import { Product_author } from 'src/entitis/Product.author';
 
 @Injectable()
 export class MainService {
+  constructor(private configService: ConfigService) {}
   async getAuthorListForMain(): Promise<any> {
     const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -21,6 +23,11 @@ export class MainService {
         sortedInfo.push({
           name: sorted[i].name,
           imagePath: sorted[i].imagePath,
+          authorListUri: `${
+            this.configService.get('TEST') === 'true'
+              ? this.configService.get('TEST_COMMON_PATH')
+              : this.configService.get('COMMON_PATH')
+          }author/${sorted[i].name}/products`,
         });
       }
       const sliceSortedInfo = sortedInfo.slice(0, 3);
