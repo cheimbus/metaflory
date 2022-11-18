@@ -22,9 +22,6 @@ export class MypageService {
   }
   // 유저 정보 가져오기
   async getUserInfo(userId: number): Promise<any> {
-    const queryRunner = dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
     const userInfo = await dataSource
       .getRepository(User)
       .createQueryBuilder('user')
@@ -36,7 +33,6 @@ export class MypageService {
     this.birthday = userInfo.birthday;
     this.accountStatus = userInfo.accountStatus;
     this.userId = userId;
-    await queryRunner.commitTransaction();
     return {
       userInfo: {
         name: this.name,

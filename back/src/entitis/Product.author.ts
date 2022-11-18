@@ -41,5 +41,5 @@ export class Product_author {
   imagePath: string;
 
   @OneToMany(() => Product, (product) => product.AuthorId)
-  product: Product;
+  product: Product[];
 }

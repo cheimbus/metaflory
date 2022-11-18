@@ -133,10 +133,7 @@ export class ProductService {
 
   // 상품 뷰 (관리자)
   async getOneProductToAdmin(name: string) {
-    const queryRunner = await dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    const productInfo = await queryRunner.manager
+    const productInfo = await dataSource.manager
       .getRepository(Product)
       .createQueryBuilder('product')
       .where('product.name=:name', { name })
@@ -145,55 +142,44 @@ export class ProductService {
     if (!productInfo) {
       throw new BadRequestException('해당 정보가 없습니다.');
     }
-    try {
-      const parsedImagePath = JSON.parse(productInfo.imagePath);
-      const authorInfo = await queryRunner.manager
-        .getRepository(Product_author)
-        .createQueryBuilder()
-        .where('id=:id', { id: productInfo.authorId })
-        .getOne();
-      await queryRunner.commitTransaction();
-      return {
-        author: authorInfo.name,
-        isSoldout: productInfo.isSoldout,
-        name: productInfo.name,
-        price: productInfo.price,
-        content: productInfo.content,
-        flowerLanguage: productInfo.flowerLanguage,
-        quantityMax: productInfo.quantityMax,
-        quantityNow: productInfo.quantityNow,
-        imagePath: parsedImagePath,
-        getCurrentProductInfoUri: `${
-          this.configService.get('TEST') === 'true'
-            ? this.configService.get('TEST_PRODUCT_PATH')
-            : this.configService.get('PRODUCT_PATH')
-        }${name}/${this.configService.get('ADMIN_PATH')}/mo`,
-        deleteProductUri: `${
-          this.configService.get('TEST') === 'true'
-            ? this.configService.get('TEST_PRODUCT_PATH')
-            : this.configService.get('PRODUCT_PATH')
-        }${name}/${this.configService.get('ADMIN_PATH')}/de`,
-        restoreProductUri: `${
-          this.configService.get('TEST') === 'true'
-            ? this.configService.get('TEST_PRODUCT_PATH')
-            : this.configService.get('PRODUCT_PATH')
-        }${name}/${this.configService.get('ADMIN_PATH')}/re`,
-      };
-    } catch (err) {
-      console.log(err);
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
-    }
+    const parsedImagePath = JSON.parse(productInfo.imagePath);
+    const authorInfo = await dataSource.manager
+      .getRepository(Product_author)
+      .createQueryBuilder()
+      .where('id=:id', { id: productInfo.authorId })
+      .getOne();
+    return {
+      author: authorInfo.name,
+      isSoldout: productInfo.isSoldout,
+      name: productInfo.name,
+      price: productInfo.price,
+      content: productInfo.content,
+      flowerLanguage: productInfo.flowerLanguage,
+      quantityMax: productInfo.quantityMax,
+      quantityNow: productInfo.quantityNow,
+      imagePath: parsedImagePath,
+      getCurrentProductInfoUri: `${
+        this.configService.get('TEST') === 'true'
+          ? this.configService.get('TEST_PRODUCT_PATH')
+          : this.configService.get('PRODUCT_PATH')
+      }${name}/${this.configService.get('ADMIN_PATH')}/mo`,
+      deleteProductUri: `${
+        this.configService.get('TEST') === 'true'
+          ? this.configService.get('TEST_PRODUCT_PATH')
+          : this.configService.get('PRODUCT_PATH')
+      }${name}/${this.configService.get('ADMIN_PATH')}/de`,
+      restoreProductUri: `${
+        this.configService.get('TEST') === 'true'
+          ? this.configService.get('TEST_PRODUCT_PATH')
+          : this.configService.get('PRODUCT_PATH')
+      }${name}/${this.configService.get('ADMIN_PATH')}/re`,
+    };
   }
 
   // 상품 목록(관리자)
   // 첫번째 등록한 이미지가 대표이미지가 됨
   async getAllProductToAdmin() {
-    const queryRunner = dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    const getProductInfos = await queryRunner.manager
+    const getProductInfos = await dataSource.manager
       .getRepository(Product)
       .createQueryBuilder('product')
       .where('product.isDeleted=:isDeleted', { isDeleted: false })
@@ -201,30 +187,22 @@ export class ProductService {
     if (!getProductInfos) {
       throw new BadRequestException('해당 정보가 없습니다.');
     }
-    try {
-      const productInfos = [];
-      for (let i = 0; i < getProductInfos.length; i++) {
-        const parsedImage = JSON.parse(getProductInfos[i].imagePath);
-        productInfos.push({
-          viewUri: `${
-            this.configService.get('TEST') === 'true'
-              ? this.configService.get('TEST_PRODUCT_PATH')
-              : this.configService.get('PRODUCT_PATH')
-          }${getProductInfos[i].name}/${this.configService.get('ADMIN_PATH')}`,
-          imagePath: `${parsedImage[0]}`,
-          name: getProductInfos[i].name,
-          price: getProductInfos[i].price,
-          isSoldout: getProductInfos[i].isSoldout,
-        });
-      }
-      await queryRunner.commitTransaction();
-      return productInfos;
-    } catch (err) {
-      console.log(err);
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
+    const productInfos = [];
+    for (let i = 0; i < getProductInfos.length; i++) {
+      const parsedImage = JSON.parse(getProductInfos[i].imagePath);
+      productInfos.push({
+        viewUri: `${
+          this.configService.get('TEST') === 'true'
+            ? this.configService.get('TEST_PRODUCT_PATH')
+            : this.configService.get('PRODUCT_PATH')
+        }${getProductInfos[i].name}/${this.configService.get('ADMIN_PATH')}`,
+        imagePath: `${parsedImage[0]}`,
+        name: getProductInfos[i].name,
+        price: getProductInfos[i].price,
+        isSoldout: getProductInfos[i].isSoldout,
+      });
     }
+    return productInfos;
   }
 
   // 상품 수정하기 전 원래있던 내용 가져오기 (관리자)
@@ -269,7 +247,7 @@ export class ProductService {
     files: Express.Multer.File[],
     _name: string,
   ): Promise<any> {
-    const queryRunner = await dataSource.createQueryRunner();
+    const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
@@ -338,7 +316,7 @@ export class ProductService {
 
   // 상품 삭제 soft delete (관리자)
   async deleteProduct(_name: string): Promise<any> {
-    const queryRunner = await dataSource.createQueryRunner();
+    const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     const exist = await dataSource.manager
@@ -374,7 +352,7 @@ export class ProductService {
 
   // 상품 복구 (관리자)
   async restoreProduct(_name: string): Promise<any> {
-    const queryRunner = await dataSource.createQueryRunner();
+    const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
@@ -401,7 +379,7 @@ export class ProductService {
 
   // 상품 뷰 (사용자)
   async getOneProductForUser(name: string): Promise<any> {
-    const queryRunner = await dataSource.createQueryRunner();
+    const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     const productInfo = await queryRunner.manager
@@ -415,6 +393,14 @@ export class ProductService {
     }
     try {
       const getHits = productInfo.AuthorId.hits + 1;
+      const getViewHits = productInfo.hits + 1;
+      await dataSource
+        .createQueryBuilder()
+        .update(Product)
+        .set({ hits: getViewHits })
+        .where('hits=:hits', { hits: productInfo.hits })
+        .andWhere('name=:name', { name: productInfo.name })
+        .execute();
       await dataSource
         .createQueryBuilder()
         .update(Product_author)
@@ -444,9 +430,6 @@ export class ProductService {
 
   // 상품 목록 (사용자)
   async getAllProductForuser(): Promise<any> {
-    const queryRunner = await dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
     const getProductInfos = await dataSource.manager
       .getRepository(Product)
       .createQueryBuilder('product')
@@ -455,28 +438,21 @@ export class ProductService {
     if (!getProductInfos) {
       throw new BadRequestException('해당 정보가 없습니다.');
     }
-    try {
-      const productInfos = [];
-      for (let i = 0; i < getProductInfos.length; i++) {
-        const parsedImagePath = JSON.parse(getProductInfos[i].imagePath);
-        productInfos.push({
-          viewUri: `${
-            this.configService.get('TEST') === 'true'
-              ? this.configService.get('TEST_PRODUCT_PATH')
-              : this.configService.get('PRODUCT_PATH')
-          }${getProductInfos[i].name}`,
-          imagePath: parsedImagePath[0],
-          name: getProductInfos[i].name,
-          price: getProductInfos[i].price,
-          isSoldout: getProductInfos[i].isSoldout,
-        });
-      }
-      await queryRunner.commitTransaction();
-      return productInfos;
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
+    const productInfos = [];
+    for (let i = 0; i < getProductInfos.length; i++) {
+      const parsedImagePath = JSON.parse(getProductInfos[i].imagePath);
+      productInfos.push({
+        viewUri: `${
+          this.configService.get('TEST') === 'true'
+            ? this.configService.get('TEST_PRODUCT_PATH')
+            : this.configService.get('PRODUCT_PATH')
+        }${getProductInfos[i].name}`,
+        imagePath: parsedImagePath[0],
+        name: getProductInfos[i].name,
+        price: getProductInfos[i].price,
+        isSoldout: getProductInfos[i].isSoldout,
+      });
     }
+    return productInfos;
   }
 }

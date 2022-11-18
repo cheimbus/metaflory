@@ -36,10 +36,7 @@ export class UserController {
   }
 
   @Get('kakao-redirect')
-  async redirect(
-    @Query() data,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<any> {
+  async redirect(@Query() data, @Res({ passthrough: true }) res): Promise<any> {
     const _host = 'https://kauth.kakao.com';
     const _client_id = this.configService.get('OAUTH_CLIENT_ID');
     const _redirect_uri = this.configService.get('OAUTH_REDIRECT_URI');
@@ -70,12 +67,10 @@ export class UserController {
     // }mypage`;
     res.cookie('Authorization', accessToken, accessTokenCookieOption);
     res.cookie('RefreshToken', refreshToken, refreshTokenCookieOption);
-    return res.status(HttpStatus.CREATED).send({
-      data: {
-        serverAccessToken: accessToken,
-        serverRefreshToken: refreshToken,
-      },
-    });
+    return {
+      serverAccessToken: accessToken,
+      serverRefreshToken: refreshToken,
+    };
     // 일단 테스트하기 쉽게 리턴으로 엑세스토큰
   }
 
@@ -87,10 +82,10 @@ export class UserController {
     res.cookie('Authorization', accessToken, accessTokenCookieOption);
     const kakaoAccessToken = await this.kakaoService.getAccessToken();
     const serverAccessToken = accessToken;
-    return res.status(HttpStatus.CREATED).send({
+    return {
       kakaoAccessToken,
       serverAccessToken,
-    });
+    };
   }
 
   @UseGuards(jwtRefreshTokenAuthGuard)

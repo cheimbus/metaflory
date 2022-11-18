@@ -94,17 +94,26 @@ export class AuthorService {
   }
 
   async getAuthorProducts(name: string): Promise<any> {
-    const queryRunner = dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    const products = await queryRunner.manager
+    const products = await dataSource.manager
       .getRepository(Product_author)
       .createQueryBuilder('author')
       .where('author.name=:name', { name })
       .leftJoinAndSelect('author.product', 'product')
       .getOne();
-    console.log(products.product);
     const authorWithProducts = [];
-    // for (let i = 0; i < products; i++) {}
+    for (let i = 0; i < products.product.length; i++) {
+      authorWithProducts.push({
+        viewUri: `${
+          this.configService.get('TEST') === 'true'
+            ? this.configService.get('TEST_PRODUCT_PATH')
+            : this.configService.get('PRODUCT_PATH')
+        }${products.product[i].name}`,
+        name: products.product[i].name,
+        price: products.product[i].price,
+        ImagePath: JSON.parse(products.product[i].imagePath)[0],
+        isSoldout: products.product[i].isSoldout,
+      });
+      return authorWithProducts;
+    }
   }
 }

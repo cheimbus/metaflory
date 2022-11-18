@@ -38,7 +38,7 @@ export class UserService {
   }
 
   async createServerId(userId: number, refreshToken: string) {
-    const queryRunner = await dataSource.createQueryRunner();
+    const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     this.userId = userId;
@@ -57,25 +57,26 @@ export class UserService {
           .where('userId=:userId', { userId: this.userId })
           .andWhere('type=:type', { type: this.type })
           .execute();
-        return await queryRunner.commitTransaction();
+        await queryRunner.commitTransaction();
       } catch (err) {
         await queryRunner.rollbackTransaction();
       } finally {
         await queryRunner.release();
       }
-    }
-    try {
-      this.userId = userId;
-      const token = new UserTokenList();
-      token.type = this.type;
-      token.refreshToken = refreshToken;
-      token.userId = this.userId;
-      await queryRunner.manager.getRepository(UserTokenList).save(token);
-      return await queryRunner.commitTransaction();
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
+    } else {
+      try {
+        this.userId = userId;
+        const token = new UserTokenList();
+        token.type = this.type;
+        token.refreshToken = refreshToken;
+        token.userId = this.userId;
+        await queryRunner.manager.getRepository(UserTokenList).save(token);
+        await queryRunner.commitTransaction();
+      } catch (err) {
+        await queryRunner.rollbackTransaction();
+      } finally {
+        await queryRunner.release();
+      }
     }
   }
 
@@ -246,7 +247,9 @@ export class KakaoService {
     this.email = info.data.kakao_account.email;
     this.gender = info.data.kakao_account.gender;
     this.birthday = info.data.kakao_account.birthday;
-    console.log(this.name);
+    const queryRunner = dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     const exist = await dataSource.manager
       .getRepository(User)
       .createQueryBuilder('user')
@@ -256,9 +259,6 @@ export class KakaoService {
       })
       .getOne();
     // 이메일이 존재한다면 리프레쉬토큰을 업데이트를 해줘야함
-    const queryRunner = dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
     if (exist) {
       this.userId = exist.id;
       try {

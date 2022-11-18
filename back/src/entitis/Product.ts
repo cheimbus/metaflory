@@ -145,6 +145,14 @@ export class Product {
   })
   imagePath: string;
 
+  @IsNumber()
+  @ApiProperty({
+    example: 1,
+    description: '상품 조회수',
+  })
+  @Column({ type: 'int', name: 'hits' })
+  hits: number;
+
   @CreateDateColumn({ type: 'datetime', name: 'created_at' })
   createdAt: Date;
 

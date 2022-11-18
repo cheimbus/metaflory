@@ -16,4 +16,18 @@ export class MainController {
   async getAuthorListForMain(): Promise<any> {
     return await this.mainService.getAuthorListForMain();
   }
+
+  /**
+   * 메인페이지 꽃 선물카드
+   * 최신 상품 3개를 골라서 나열
+   */
+  @Get('present/list')
+  async getPresentListForMain(): Promise<any> {
+    return await this.mainService.getPresentListForMain();
+  }
+
+  /**
+   * 메인페이지 꽃 nft
+   * 조회수가 높은 3개를 골라서 나열
+   */
 }
