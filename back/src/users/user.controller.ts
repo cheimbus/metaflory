@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -13,6 +22,7 @@ export class UserController {
     private readonly kakaoService: KakaoService,
     private configService: ConfigService,
     private userService: UserService,
+    private httpService: HttpService,
   ) {}
 
   @Get('kakaologin')
@@ -26,7 +36,10 @@ export class UserController {
   }
 
   @Get('kakao-redirect')
-  async redirect(@Query() data, @Res({ passthrough: true }) res: Response) {
+  async redirect(
+    @Query() data,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<any> {
     const _host = 'https://kauth.kakao.com';
     const _client_id = this.configService.get('OAUTH_CLIENT_ID');
     const _redirect_uri = this.configService.get('OAUTH_REDIRECT_URI');
@@ -37,6 +50,7 @@ export class UserController {
         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
     };
+    // 카카오 로그인할 때 문제가 발생
     await this.kakaoService.login(_uri, _header);
     const { name, email, gender, birthday, userId } =
       await this.kakaoService.getUserInfo();
@@ -49,19 +63,20 @@ export class UserController {
     await this.userService.createServerId(userId, refreshToken);
     await this.userService.setUserInfo(name, email, gender, birthday);
     await this.userService.setRefreshToken();
-    const mypage = `${
-      this.configService.get('TEST') === 'true'
-        ? this.configService.get('TEST_COMMON_PATH')
-        : this.configService.get('COMMON_PATH')
-    }mypage`;
+    // const mypage = `${
+    //   this.configService.get('TEST') === 'true'
+    //     ? this.configService.get('TEST_COMMON_PATH')
+    //     : this.configService.get('COMMON_PATH')
+    // }mypage`;
     res.cookie('Authorization', accessToken, accessTokenCookieOption);
     res.cookie('RefreshToken', refreshToken, refreshTokenCookieOption);
+    return res.status(HttpStatus.CREATED).send({
+      data: {
+        serverAccessToken: accessToken,
+        serverRefreshToken: refreshToken,
+      },
+    });
     // 일단 테스트하기 쉽게 리턴으로 엑세스토큰
-    return {
-      serverAccessToken: accessToken,
-      serverRefreshToken: refreshToken,
-      mypage,
-    };
   }
 
   @UseGuards(jwtRefreshTokenAuthGuard)

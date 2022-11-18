@@ -38,16 +38,16 @@ export class UserService {
   }
 
   async createServerId(userId: number, refreshToken: string) {
+    const queryRunner = await dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     this.userId = userId;
     this.refreshToken = refreshToken;
     const exist = await this.userTokenListRepository.findOne({
       where: { userId: this.userId, type: this.type },
     });
-    // 이메일이 존재한다면 리프레쉬토큰을 업데이트를 해줘야함
+    // 유저가 존재한다면 리프레쉬토큰을 업데이트를 해줘야함
     if (exist) {
-      const queryRunner = await dataSource.createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
       try {
         const hashedRefresh = await bcrypt.hash(this.refreshToken, 12);
         await dataSource
@@ -57,17 +57,13 @@ export class UserService {
           .where('userId=:userId', { userId: this.userId })
           .andWhere('type=:type', { type: this.type })
           .execute();
-        await queryRunner.commitTransaction();
-        return;
+        return await queryRunner.commitTransaction();
       } catch (err) {
         await queryRunner.rollbackTransaction();
       } finally {
         await queryRunner.release();
       }
     }
-    const queryRunner = await dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
     try {
       this.userId = userId;
       const token = new UserTokenList();
@@ -75,7 +71,7 @@ export class UserService {
       token.refreshToken = refreshToken;
       token.userId = this.userId;
       await queryRunner.manager.getRepository(UserTokenList).save(token);
-      await queryRunner.commitTransaction();
+      return await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();
     } finally {
@@ -250,15 +246,21 @@ export class KakaoService {
     this.email = info.data.kakao_account.email;
     this.gender = info.data.kakao_account.gender;
     this.birthday = info.data.kakao_account.birthday;
-    const exist = await this.userRepository.findOne({
-      where: { email: this.email, accountStatus: this.accountStatus },
-    });
+    console.log(this.name);
+    const exist = await dataSource.manager
+      .getRepository(User)
+      .createQueryBuilder('user')
+      .where('user.name=:name', { name: this.name })
+      .andWhere('user.accountStatus=:accountStatus', {
+        accountStatus: this.accountStatus,
+      })
+      .getOne();
     // 이메일이 존재한다면 리프레쉬토큰을 업데이트를 해줘야함
+    const queryRunner = dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     if (exist) {
       this.userId = exist.id;
-      const queryRunner = await dataSource.createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
       try {
         const hashedRefresh = await bcrypt.hash(this.refreshToken, 12);
         await dataSource
@@ -276,9 +278,6 @@ export class KakaoService {
         await queryRunner.release();
       }
     }
-    const queryRunner = await dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
     try {
       const user = new User();
       user.name = this.name;
@@ -317,7 +316,7 @@ export class KakaoService {
   }
 
   async refreshTokenToNull(id: number): Promise<any> {
-    return dataSource.manager
+    return await dataSource.manager
       .createQueryBuilder()
       .update(UserTokenList)
       .set({ refreshToken: null })
@@ -333,8 +332,9 @@ export class KakaoService {
       Authorization: `Bearer ${this.accessToken}`,
       'Content-Type': 'application/x-www-form-urlencoded',
     };
-    await firstValueFrom(this.httpService.post(_url, '', { headers: _header }));
-    return '로그아웃 되었습니다';
+    return await firstValueFrom(
+      this.httpService.post(_url, '', { headers: _header }),
+    );
   }
   // 로그 삭제 및 로그아웃
   async deleteLog(): Promise<any> {
@@ -342,8 +342,9 @@ export class KakaoService {
     const _header = {
       Authorization: `bearer ${this.accessToken}`,
     };
-    await firstValueFrom(this.httpService.post(_url, '', { headers: _header }));
-    return '로그가 삭제되었습니다';
+    return await firstValueFrom(
+      this.httpService.post(_url, '', { headers: _header }),
+    );
   }
   // 토큰 다시 발급
   async getAccessToken(): Promise<any> {
