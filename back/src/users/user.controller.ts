@@ -87,7 +87,10 @@ export class UserController {
     res.cookie('Authorization', accessToken, accessTokenCookieOption);
     const kakaoAccessToken = await this.kakaoService.getAccessToken();
     const serverAccessToken = accessToken;
-    return { serverAccessToken, kakaoAccessToken };
+    return res.status(HttpStatus.CREATED).send({
+      kakaoAccessToken,
+      serverAccessToken,
+    });
   }
 
   @UseGuards(jwtRefreshTokenAuthGuard)
@@ -100,7 +103,7 @@ export class UserController {
     await this.kakaoService.logout();
     res.cookie('Authorization', '', accessTokenCookieOption);
     res.cookie('RefreshToken', '', refreshTokenCookieOption);
-    return '로그아웃';
+    return res.status(HttpStatus.OK).send();
   }
 
   // 사용자 카톡까지 로그아웃시킴 나중에 사용되면 그때 사용함
