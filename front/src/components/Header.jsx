@@ -1,19 +1,27 @@
-import React, {useState, useEffect} from 'react';
-import {Link} from 'react-router-dom'; 
-import Navbar from './Navbar';
-import {useCookies} from 'react-cookie';
+import React, {useState, useEffect, useContext} from 'react';
+import {Link} from 'react-router-dom';  
 import { GET } from '../utils/HttpUtil';
 import { SERVER_URL } from '../utils/Common';
+import UserContext from '../context/User';
+import Cookies from 'universal-cookie';
 
 
 export default function Header(){
+    console.log("header");
+ 
+    const cookies = new Cookies();
 
-    const [cookies, setCookie, removeCookie] = useCookies(['lTkn']);
+    const {state, actions} = useContext(UserContext); 
     const [login, setLogin] = useState(false);  
-    useEffect(()=>{
-        const accessToken = cookies.lTkn;
-        console.log("accessToken",accessToken);
-        if(!accessToken) {  setLogin(false); return;}
+
+    useEffect(()=>{ 
+        console.log("State",state);
+        const accessToken = state.accessToken || cookies.get('lTkn');
+        console.log("accessToken",accessToken); 
+        if(!accessToken){
+            setLogin(false);
+            return ()=>{};
+        } 
         GET({url:SERVER_URL+"/mypage", token:accessToken}).then((res)=>{
             console.log(res);
             if(res.data && res.data.data && res.data.success){
@@ -21,16 +29,39 @@ export default function Header(){
                 setLogin(true);
             } else{
                 console.log("NOt Login");
-                setLogin(false);
-                removeCookie('lTkn');
+                cookies.remove('lTkn',{path:'/'});
+                actions.setAccessToken();
+                setLogin(false); 
             } 
         }).catch((err)=>{
-            setLogin(false);
-            removeCookie('lTkn');
-        })
-    });
-
+            cookies.remove('lTkn',{path:'/'});
+            actions.setAccessToken();
+            setLogin(false); 
+        }) 
+    },[state.accessToken]);
     
+    const logout = ()=>{
+        console.log("Logout...");
+        cookies.remove('lTkn',{path:'/'});
+        actions.setAccessToken();
+    }
+
+    const LoginButton = (props)=>{
+        return (
+            <Link to="/login">Login</Link>
+        );
+    }
+        
+    const LogOutButton = (props)=>{
+        return (
+            <>
+                <Link to="/mypage">MyPage</Link>
+                <Link to='' onClick={logout}>Logout</Link>
+            </>
+            
+        ); 
+    }
+
 
     return (
         <header>
@@ -50,21 +81,5 @@ export default function Header(){
             </div>
         </header>
         
-    )
-}
-
-function LoginButton(props){
-    return (
-        <Link to="/login">Login</Link>
-    );
-}
-
-function LogOutButton(props){
-    return (
-        <>
-            <Link to="/mypage">MyPage</Link>
-            <Link to="/logout">Logout</Link>
-        </>
-        
-    );
+    ) 
 }

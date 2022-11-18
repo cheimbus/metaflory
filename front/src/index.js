@@ -1,17 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { UserProvider } from './context/User';
 import './index.css';  
 import reportWebVitals from './reportWebVitals'; 
-import PageRouter from './router/PageRouter';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { CookiesProvider } from 'react-cookie';
+import PageRouter from './router/PageRouter';  
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
      <React.StrictMode>   
-        <CookiesProvider>
+        <UserProvider>
           <PageRouter /> 
-        </CookiesProvider>
+        </UserProvider>
      </React.StrictMode>  
 );
 

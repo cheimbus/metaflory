@@ -12,8 +12,7 @@ import ProductListPage from "../pages/Product/ProductListPage";
 import ProductViewPage from "../pages/Product/ProductViewPage";
 import MessageReceivePage from "../pages/Gift/MessageRecievePage";
 import MyGrassPage from "../pages/Landing/MyGrassPage";
-import AdmLoginPage from "../pages/Admin/LoginPage";
-import LogOutPage from "../pages/Login/LogOutPage";
+import AdmLoginPage from "../pages/Admin/LoginPage"; 
 
 
 
@@ -28,7 +27,6 @@ export default function PageRouter(){
                 {index:true, element:<MainPage/>},
                 {path:'/login',element:<LoginPage/>}, 
                 {path:'/login/kakao',element:<LoginPage thirdparty='kakao'/>}, 
-                {path:'/logout', element:<LogOutPage/>},
                 {path:'/products',element:<ProductListPage/>},
                 {path:'/products/:productId',element:<ProductViewPage/>},
                 {path:'/gift',element:<MessageReceivePage/>},
