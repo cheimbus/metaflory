@@ -25,7 +25,7 @@ import { ProductAuthor } from 'src/entitis/Product.author';
       ProductAuthor,
     ]),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
+      rootPath: join(__dirname, '../uploads', 'product'),
       serveStaticOptions: {
         dotfiles: 'allow',
       },
