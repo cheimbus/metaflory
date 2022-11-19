@@ -13,6 +13,7 @@ import ProductViewPage from "../pages/Product/ProductViewPage";
 import MessageReceivePage from "../pages/Gift/MessageRecievePage";
 import MyGrassPage from "../pages/Landing/MyGrassPage";
 import AdmLoginPage from "../pages/Admin/LoginPage"; 
+import { AdmProductsListPage } from "../pages/Admin/ProductListPage";
 
 
 
@@ -32,6 +33,7 @@ export default function PageRouter(){
                 {path:'/gift',element:<MessageReceivePage/>},
                 {path:'/grass',element:<MyGrassPage/>} ,
                 {path:'/adm/login',element:<AdmLoginPage/>},
+                {path:'/adm/products',element:<AdmProductsListPage/>},
             ]
         },
     ]);

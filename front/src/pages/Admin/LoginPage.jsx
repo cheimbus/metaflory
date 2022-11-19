@@ -1,8 +1,14 @@
 import React, {useState} from 'react';
 import axios from 'axios';
 import {useQuery} from '@tanstack/react-query';
+import Cookies from 'universal-cookie';
+import { SERVER_URL } from '../../utils/Common';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdmLoginPage(){
+    const cookies = new Cookies(); 
+    const navigate = useNavigate();
+  
  
     const {email, setEmail} = useState('');
     const {password, setPassword} = useState('');
@@ -14,14 +20,16 @@ export default function AdmLoginPage(){
     const login = () => {
         axios({
             method:'post',
-            url:'http://127.0.0.1:3000/admins/login',
+            url:`${SERVER_URL}/admins/login`,
             data:{
                 email: document.getElementById('email').value,
                 password: document.getElementById('password').value
             }
         }).then(res=> {
             if(res.data.success){
-                alert('LoginSuccess');
+                cookies.set('aTkn',res.data.data.accessToken, {path:'/'}); 
+                console.log(res.data);
+                navigate("/adm/products",{replace:true});  
             } else{
                 alert('LoginFail');
             } 
@@ -31,6 +39,27 @@ export default function AdmLoginPage(){
             alert(err);
         })
     };
+
+    const register = () => {
+        axios({
+            method:'post',
+            url:`${SERVER_URL}/admins/signup`,
+            data:{
+                email: document.getElementById('emailR').value,
+                password: document.getElementById('passwordR').value
+            }
+        }).then(res=> {
+            if(res.data.success){
+                alert('Regist Complete');
+            } else{
+                alert('Regist Fail');
+            } 
+            console.log(res);
+        })
+        .catch(err=>{
+            alert(err);
+        })
+    }
 
     return (
         
@@ -42,11 +71,11 @@ export default function AdmLoginPage(){
                     <button onClick={login}>로그인하기</button>  
                 </div>
                   
-                <form action="http://127.0.0.1:3000/admins/signup" method='post'>    
-                    <input type="text" name="email" id="" placeholder='input email' onChange={setEmailR} value={emailR}/>
-                    <input type="password" name="password" id="" placeholder='password' onChange={setPasswordR}  value={passwordR}/>
-                    <button type="submit">회원가입하기</button>
-                </form>
+                <div className="form">    
+                    <input type="text" name="email" id="emailR" placeholder='input email' onChange={setEmailR} value={emailR}/>
+                    <input type="password" name="password" id="passwordR" placeholder='password' onChange={setPasswordR}  value={passwordR}/>
+                    <button onClick={register}>회원가입하기</button>
+                </div>
 
                 
             </div>
