@@ -28,7 +28,6 @@ export class AuthorController {
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() data: AuthorSetInfoDto,
   ): Promise<any> {
-    console.log(files);
     return await this.authorService.setAuthorInfo(files, data.name);
   }
 
@@ -42,8 +41,11 @@ export class AuthorController {
     return await this.authorService.getAuthorList();
   }
 
+  // 이건 다음 버전에 넣을 예정
   @Get('author/:name/products')
   async getAuthorProduct(@Param('name') name: string) {
     return await this.authorService.getAuthorProducts(name);
   }
+
+  // @Post('author/')
 }

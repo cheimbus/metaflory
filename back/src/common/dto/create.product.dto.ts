@@ -39,18 +39,9 @@ export class CreateProductDto extends PickType(Product, [
   @IsNotEmpty()
   @IsString()
   @ApiProperty({
-    example: '카테고리 이름',
+    example: '데이지',
     description: '카테고리 이름',
     required: true,
   })
-  categoryName: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @ApiProperty({
-    example: '이 꽃은 이쁩니다.',
-    description: '카테고리 설명',
-    required: true,
-  })
-  categoryContent: string;
+  category: string;
 }

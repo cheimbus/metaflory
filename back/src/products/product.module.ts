@@ -10,9 +10,9 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { Admin } from 'src/entitis/Admin';
-import { Product_category_list } from 'src/entitis/Product.category.list';
+import { ProductCategoryList } from 'src/entitis/Product.category.list';
 import { Category } from 'src/entitis/Category';
-import { Product_author } from 'src/entitis/Product.author';
+import { ProductAuthor } from 'src/entitis/Product.author';
 
 @Module({
   imports: [
@@ -21,9 +21,9 @@ import { Product_author } from 'src/entitis/Product.author';
       User,
       Product,
       Admin,
-      Product_category_list,
+      ProductCategoryList,
       Category,
-      Product_author,
+      ProductAuthor,
     ]),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),

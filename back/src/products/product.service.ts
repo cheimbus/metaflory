@@ -1,8 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import dataSource from 'datasource';
-import { Product_author } from 'src/entitis/Product.author';
+import { Category } from 'src/entitis/Category';
 import { Product } from 'src/entitis/Product';
+import { ProductAuthor } from 'src/entitis/Product.author';
+import { ProductCategoryList } from 'src/entitis/Product.category.list';
 
 /**
  * 사용자에게만 보여줄 상품정보, 관리자에게만 보여줄 상품정보 나눠서 개발
@@ -17,6 +19,7 @@ export class ProductService {
   quantityMax: number;
   quantityNow: number;
   imagePath: string;
+  category: string;
   constructor(private configService: ConfigService) {
     this.author = '';
     this.name = '';
@@ -26,6 +29,7 @@ export class ProductService {
     this.quantityMax;
     this.quantityNow;
     this.imagePath = '';
+    this.category = '';
   }
   async createProduct(data, files: Express.Multer.File[]): Promise<any> {
     const filesNames = [];
@@ -47,6 +51,7 @@ export class ProductService {
     this.flowerLanguage = data.data.flowerLanguage;
     this.quantityMax = data.data.quantityMax;
     this.imagePath = stringifiedImagePath;
+    this.category = data.data.category;
     const exist = await dataSource
       .getRepository(Product)
       .createQueryBuilder('product')
@@ -60,12 +65,18 @@ export class ProductService {
     await queryRunner.startTransaction();
     try {
       const existAuthor = await dataSource.manager
-        .getRepository(Product_author)
+        .getRepository(ProductAuthor)
         .createQueryBuilder()
         .where('name=:name', { name: this.author })
         .getOne();
+      const existCategory = await dataSource.manager
+        .getRepository(Category)
+        .createQueryBuilder()
+        .where('name=:name', { name: this.category })
+        .getOne();
       const product = new Product();
       product.authorId = existAuthor.id;
+      product.category = this.category;
       product.name = this.name;
       product.price = this.price;
       product.content = this.content;
@@ -73,12 +84,20 @@ export class ProductService {
       product.quantityMax = this.quantityMax;
       product.quantityNow = this.quantityMax;
       product.imagePath = this.imagePath;
-
-      await queryRunner.manager.getRepository(Product).save(product);
+      const createProduct = await queryRunner.manager
+        .getRepository(Product)
+        .save(product);
+      const productCategoryList = new ProductCategoryList();
+      productCategoryList.productId = createProduct.id;
+      productCategoryList.categoryId = existCategory.id;
+      await queryRunner.manager
+        .getRepository(ProductCategoryList)
+        .save(productCategoryList);
       await queryRunner.commitTransaction();
       return {
         author: this.author,
         name: this.name,
+        category: this.category,
         price: this.price,
         content: this.content,
         flowerLanguage: this.flowerLanguage,
@@ -107,35 +126,22 @@ export class ProductService {
     }
     const parsedImagePath = JSON.parse(productInfo.imagePath);
     const authorInfo = await dataSource.manager
-      .getRepository(Product_author)
+      .getRepository(ProductAuthor)
       .createQueryBuilder()
       .where('id=:id', { id: productInfo.authorId })
       .getOne();
     return {
+      id: productInfo.id,
       author: authorInfo.name,
       isSoldout: productInfo.isSoldout,
       name: productInfo.name,
       price: productInfo.price,
       content: productInfo.content,
+      category: productInfo.category,
       flowerLanguage: productInfo.flowerLanguage,
       quantityMax: productInfo.quantityMax,
       quantityNow: productInfo.quantityNow,
       imagePath: parsedImagePath,
-      getCurrentProductInfoUri: `${
-        this.configService.get('TEST') === 'true'
-          ? this.configService.get('TEST_PRODUCT_PATH')
-          : this.configService.get('PRODUCT_PATH')
-      }${name}/${this.configService.get('ADMIN_PATH')}/mo`,
-      deleteProductUri: `${
-        this.configService.get('TEST') === 'true'
-          ? this.configService.get('TEST_PRODUCT_PATH')
-          : this.configService.get('PRODUCT_PATH')
-      }${name}/${this.configService.get('ADMIN_PATH')}/de`,
-      restoreProductUri: `${
-        this.configService.get('TEST') === 'true'
-          ? this.configService.get('TEST_PRODUCT_PATH')
-          : this.configService.get('PRODUCT_PATH')
-      }${name}/${this.configService.get('ADMIN_PATH')}/re`,
     };
   }
 
@@ -154,11 +160,7 @@ export class ProductService {
     for (let i = 0; i < getProductInfos.length; i++) {
       const parsedImage = JSON.parse(getProductInfos[i].imagePath);
       productInfos.push({
-        viewUri: `${
-          this.configService.get('TEST') === 'true'
-            ? this.configService.get('TEST_PRODUCT_PATH')
-            : this.configService.get('PRODUCT_PATH')
-        }${getProductInfos[i].name}/${this.configService.get('ADMIN_PATH')}`,
+        id: getProductInfos[i].id,
         imagePath: `${parsedImage[0]}`,
         name: getProductInfos[i].name,
         price: getProductInfos[i].price,
@@ -174,6 +176,7 @@ export class ProductService {
       author,
       name,
       price,
+      category,
       content,
       flowerLanguage,
       quantityMax,
@@ -183,24 +186,20 @@ export class ProductService {
     this.author = author;
     this.name = name;
     this.price = price;
+    this.category = category;
     this.content = content;
     this.flowerLanguage = flowerLanguage;
     this.quantityMax = quantityMax;
     this.imagePath = imagePath;
-    const productUrl = `${
-      this.configService.get('TEST') === 'true'
-        ? this.configService.get('TEST_PRODUCT_PATH')
-        : this.configService.get('PRODUCT_PATH')
-    }${_name}/${this.configService.get('ADMIN_PATH')}/mo`;
     return {
       author,
+      category,
       name,
       price,
       content,
       flowerLanguage,
       quantityMax,
       imagePath,
-      modifyUrl: productUrl,
     };
   }
 
@@ -236,6 +235,9 @@ export class ProductService {
       this.price = parseInt(
         `${data.data.price === undefined ? this.price : data.data.price}`,
       );
+      this.category = `${
+        data.data.category === undefined ? this.category : data.data.category
+      }`;
       this.content = `${
         data.data.content === undefined ? this.content : data.data.content
       }`;
@@ -261,6 +263,7 @@ export class ProductService {
           author: this.author,
           name: this.name,
           price: this.price,
+          category: this.category,
           content: this.content,
           flowerLanguage: this.flowerLanguage,
           quantityMax: this.quantityMax,
@@ -366,7 +369,7 @@ export class ProductService {
         .execute();
       await dataSource
         .createQueryBuilder()
-        .update(Product_author)
+        .update(ProductAuthor)
         .set({ hits: getHits })
         .where('name=:name', { name: productInfo.AuthorId.name })
         .execute();
@@ -376,6 +379,7 @@ export class ProductService {
         author: productInfo.AuthorId.name,
         isSoldout: productInfo.isSoldout,
         name: productInfo.name,
+        category: productInfo.category,
         price: productInfo.price,
         content: productInfo.content,
         flowerLanguage: productInfo.flowerLanguage,
@@ -405,11 +409,7 @@ export class ProductService {
     for (let i = 0; i < getProductInfos.length; i++) {
       const parsedImagePath = JSON.parse(getProductInfos[i].imagePath);
       productInfos.push({
-        viewUri: `${
-          this.configService.get('TEST') === 'true'
-            ? this.configService.get('TEST_PRODUCT_PATH')
-            : this.configService.get('PRODUCT_PATH')
-        }${getProductInfos[i].name}`,
+        id: getProductInfos[i].id,
         imagePath: parsedImagePath[0],
         name: getProductInfos[i].name,
         price: getProductInfos[i].price,

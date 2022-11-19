@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Product } from './Product';
 @Entity('product_authors')
-export class Product_author {
+export class ProductAuthor {
   @ApiProperty({
     example: 1,
     description: '작가 아이디',

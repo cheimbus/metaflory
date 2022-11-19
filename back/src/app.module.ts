@@ -21,12 +21,13 @@ import path from 'path/posix';
 import { AdminsModule } from './admins/admins.module';
 import { Admin } from './entitis/Admin';
 import { Category } from './entitis/Category';
-import { Product_category_list } from './entitis/Product.category.list';
+import { ProductCategoryList } from './entitis/Product.category.list';
 import { MypageModule } from './mypages/mypage.module';
 import { PurchaseModule } from './purchase/purchase.module';
 import { AuthorModule } from './authors/author.module';
 import { MainModule } from './main/main.module';
 import { CategoriesModule } from './categories/categories.module';
+import { ProductAuthor } from './entitis/Product.author';
 
 @Module({
   imports: [
@@ -42,7 +43,8 @@ import { CategoriesModule } from './categories/categories.module';
       UserRoungeStory,
       UserPurchaseList,
       Category,
-      Product_category_list,
+      ProductCategoryList,
+      ProductAuthor,
     ]),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],

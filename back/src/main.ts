@@ -9,7 +9,7 @@ import {
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/http-exception.filter';
 import { successInterceptor } from './common/success.interceptor';
-import { TimeoutInterceptor } from './common/timeout.intercepotr';
+import { TimeoutInterceptor } from './common/timeout.interceptor';
 
 declare const module: any;
 

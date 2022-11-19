@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product_category_list } from './Product.category.list';
+import { ProductCategoryList } from './Product.category.list';
 @Entity('categories')
 export class Category {
   @ApiProperty({
@@ -49,8 +49,8 @@ export class Category {
   deletedAt: Date;
 
   @OneToMany(
-    () => Product_category_list,
-    (productCategoryList) => productCategoryList.categoryId,
+    () => ProductCategoryList,
+    (productCategoryList) => productCategoryList.CategoryId,
   )
-  productCategoryList: Product_category_list[];
+  productCategoryList: ProductCategoryList[];
 }

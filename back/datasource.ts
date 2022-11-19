@@ -11,8 +11,8 @@ import { UserTokenList } from 'src/entitis/User.token.list';
 import { User } from 'src/entitis/User';
 import { Admin } from 'src/entitis/Admin';
 import { Category } from 'src/entitis/Category';
-import { Product_category_list } from 'src/entitis/Product.category.list';
-import { Product_author } from 'src/entitis/Product.author';
+import { ProductCategoryList } from 'src/entitis/Product.category.list';
+import { ProductAuthor } from 'src/entitis/Product.author';
 
 dotenv.config();
 const dataSource = new DataSource({
@@ -45,8 +45,8 @@ const dataSource = new DataSource({
     User,
     Admin,
     Category,
-    Product_category_list,
-    Product_author,
+    ProductCategoryList,
+    ProductAuthor,
   ],
   migrations: [path.join(__dirname, 'src/migrations/*')],
   charset: 'utf8mb4',

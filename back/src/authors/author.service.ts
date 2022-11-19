@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import dataSource from 'datasource';
-import { Product_author } from 'src/entitis/Product.author';
+import { ProductAuthor } from 'src/entitis/Product.author';
 
 @Injectable()
 export class AuthorService {
@@ -20,28 +20,18 @@ export class AuthorService {
         : this.configService.get('COMMON_PATH')
     }${files[0].filename}`;
     const exist = await queryRunner.manager
-      .getRepository(Product_author)
+      .getRepository(ProductAuthor)
       .createQueryBuilder('author')
       .where('author.name=:name', { name: data })
       .getOne();
-    // 대표 이미지 변경
     if (exist) {
-      await dataSource
-        .createQueryBuilder()
-        .update(Product_author)
-        .set({ imagePath })
-        .where('name=:name', { name: data })
-        .execute();
-      return {
-        author: data,
-        imagePath,
-      };
+      throw new BadRequestException('이미 생성되었습니다.');
     }
     try {
-      const author = new Product_author();
+      const author = new ProductAuthor();
       author.name = data;
       author.imagePath = imagePath;
-      await queryRunner.manager.getRepository(Product_author).save(author);
+      await queryRunner.manager.getRepository(ProductAuthor).save(author);
       await queryRunner.commitTransaction();
       return {
         author: data,
@@ -65,7 +55,7 @@ export class AuthorService {
     await queryRunner.startTransaction();
     try {
       const getAuthorList = await queryRunner.manager
-        .getRepository(Product_author)
+        .getRepository(ProductAuthor)
         .createQueryBuilder()
         .getMany();
       const sortedInfo = [];
@@ -74,13 +64,9 @@ export class AuthorService {
       });
       for (let i = 0; i < getAuthorList.length; i++) {
         sortedInfo.push({
+          id: sorted[i].id,
           name: sorted[i].name,
           imagePath: sorted[i].imagePath,
-          authorListUri: `${
-            this.configService.get('TEST') === 'true'
-              ? this.configService.get('TEST_COMMON_PATH')
-              : this.configService.get('COMMON_PATH')
-          }author/${sorted[i].name}/products`,
         });
       }
       await queryRunner.commitTransaction();
@@ -95,7 +81,7 @@ export class AuthorService {
 
   async getAuthorProducts(name: string): Promise<any> {
     const products = await dataSource.manager
-      .getRepository(Product_author)
+      .getRepository(ProductAuthor)
       .createQueryBuilder('author')
       .where('author.name=:name', { name })
       .leftJoinAndSelect('author.product', 'product')
@@ -103,11 +89,7 @@ export class AuthorService {
     const authorWithProducts = [];
     for (let i = 0; i < products.product.length; i++) {
       authorWithProducts.push({
-        viewUri: `${
-          this.configService.get('TEST') === 'true'
-            ? this.configService.get('TEST_PRODUCT_PATH')
-            : this.configService.get('PRODUCT_PATH')
-        }${products.product[i].name}`,
+        id: products.product[i].id,
         name: products.product[i].name,
         price: products.product[i].price,
         ImagePath: JSON.parse(products.product[i].imagePath)[0],

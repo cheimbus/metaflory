@@ -21,10 +21,10 @@ export class MainController {
    * 메인페이지 꽃 선물카드
    * 최신 상품 3개를 골라서 나열
    */
-  @Get('present/list')
-  async getPresentListForMain(): Promise<any> {
-    return await this.mainService.getPresentListForMain();
-  }
+  // @Get('present/list')
+  // async getPresentListForMain(): Promise<any> {
+  //   return await this.mainService.getPresentListForMain();
+  // }
 
   /**
    * 메인페이지 꽃 nft

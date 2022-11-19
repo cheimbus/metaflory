@@ -17,8 +17,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product_author } from './Product.author';
-import { Product_category_list } from './Product.category.list';
+import { ProductAuthor } from './Product.author';
+import { ProductCategoryList } from './Product.category.list';
 import { UserPurchaseList } from './User.purchase.list';
 import { UserRoungeStory } from './User.rounge.stories';
 
@@ -55,6 +55,16 @@ export class Product {
   })
   @Column({ type: 'tinyint', name: 'is_deleted', default: false })
   isDeleted: boolean;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    example: '데이지',
+    description: '상품 카테고리',
+    required: true,
+  })
+  @Column({ type: 'varchar', name: 'category' })
+  category: string;
 
   @IsNotEmpty()
   @IsString()
@@ -149,8 +159,9 @@ export class Product {
   @ApiProperty({
     example: 1,
     description: '상품 조회수',
+    default: 0,
   })
-  @Column({ type: 'int', name: 'hits' })
+  @Column({ type: 'int', name: 'hits', default: 0 })
   hits: number;
 
   @CreateDateColumn({ type: 'datetime', name: 'created_at' })
@@ -175,15 +186,15 @@ export class Product {
   userRoungeStory: UserRoungeStory[];
 
   @OneToMany(
-    () => Product_category_list,
-    (productCategoryList) => productCategoryList.productId,
+    () => ProductCategoryList,
+    (productCategoryList) => productCategoryList.ProductId,
   )
-  productCategoryList: Product_category_list[];
+  productCategoryList: ProductCategoryList[];
 
-  @ManyToOne(() => Product_author, (productAuthor) => productAuthor.product, {
+  @ManyToOne(() => ProductAuthor, (productAuthor) => productAuthor.product, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'author_id', referencedColumnName: 'id' }])
-  AuthorId: Product_author;
+  AuthorId: ProductAuthor;
 }
