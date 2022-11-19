@@ -7,7 +7,7 @@ const storage = (): multer.StorageEngine => {
   return multer.diskStorage({
     destination(req, file, cb) {
       //* 어디에 저장할 지
-      const folderName = path.join(__dirname, '..', `uploads`);
+      const folderName = path.join(__dirname, '../../..', `uploads`);
       cb(null, folderName);
     },
     filename(req, file, cb) {

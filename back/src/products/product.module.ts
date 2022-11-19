@@ -31,13 +31,13 @@ import { ProductAuthor } from 'src/entitis/Product.author';
         dotfiles: 'allow',
       },
     }),
-    MulterModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        dest: configService.get<string>('MULTER_DEST'),
-      }),
-      inject: [ConfigService],
-    }),
+    // MulterModule.registerAsync({
+    //   imports: [ConfigModule],
+    //   useFactory: async (configService: ConfigService) => ({
+    //     dest: configService.get<string>('MULTER_DEST'),
+    //   }),
+    //   inject: [ConfigService],
+    // }),
   ],
   providers: [ProductService, AdminAuthStrategy],
   controllers: [ProductController],
