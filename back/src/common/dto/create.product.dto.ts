@@ -11,6 +11,15 @@ export class CreateProductDto extends PickType(Product, [
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
+    example: 'siu',
+    description: '작가 이름',
+  })
+  author: string;
+
+  @ValidateIf((object, value) => typeof value !== typeof String(value))
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty({
     example: '10000',
     description: '가격',
     required: true,

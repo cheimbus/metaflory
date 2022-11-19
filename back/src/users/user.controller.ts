@@ -1,4 +1,3 @@
-import { HttpService } from '@nestjs/axios';
 import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';

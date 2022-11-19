@@ -26,6 +26,7 @@ import { MypageModule } from './mypages/mypage.module';
 import { PurchaseModule } from './purchase/purchase.module';
 import { AuthorModule } from './authors/author.module';
 import { MainModule } from './main/main.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { MainModule } from './main/main.module';
     PurchaseModule,
     AuthorModule,
     MainModule,
+    CategoriesModule,
   ],
   controllers: [RoungeController],
   providers: [RoungeService],

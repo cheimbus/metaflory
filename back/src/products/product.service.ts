@@ -2,9 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import dataSource from 'datasource';
 import { Product_author } from 'src/entitis/Product.author';
-import { Category } from 'src/entitis/Category';
 import { Product } from 'src/entitis/Product';
-import { Product_category_list } from 'src/entitis/Product.category.list';
 
 /**
  * 사용자에게만 보여줄 상품정보, 관리자에게만 보여줄 상품정보 나눠서 개발
@@ -19,8 +17,6 @@ export class ProductService {
   quantityMax: number;
   quantityNow: number;
   imagePath: string;
-  categoryName: string;
-  categoryContent: string;
   constructor(private configService: ConfigService) {
     this.author = '';
     this.name = '';
@@ -30,8 +26,6 @@ export class ProductService {
     this.quantityMax;
     this.quantityNow;
     this.imagePath = '';
-    this.categoryName = '';
-    this.categoryContent = '';
   }
   async createProduct(data, files: Express.Multer.File[]): Promise<any> {
     const filesNames = [];
@@ -53,8 +47,6 @@ export class ProductService {
     this.flowerLanguage = data.data.flowerLanguage;
     this.quantityMax = data.data.quantityMax;
     this.imagePath = stringifiedImagePath;
-    this.categoryName = data.data.categoryName;
-    this.categoryContent = data.data.categoryContent;
     const exist = await dataSource
       .getRepository(Product)
       .createQueryBuilder('product')
@@ -81,35 +73,8 @@ export class ProductService {
       product.quantityMax = this.quantityMax;
       product.quantityNow = this.quantityMax;
       product.imagePath = this.imagePath;
-      const createProduct = await queryRunner.manager
-        .getRepository(Product)
-        .save(product);
-      const existCategory = await queryRunner.manager
-        .getRepository(Category)
-        .createQueryBuilder()
-        .where('name=:name', { name: this.categoryName })
-        .getOne();
-      if (!existCategory) {
-        const category = new Category();
-        category.name = this.categoryName;
-        category.content = this.categoryContent;
-        const createCategory = await queryRunner.manager
-          .getRepository(Category)
-          .save(category);
-        const productCategoryList = new Product_category_list();
-        productCategoryList.productId = createProduct.id;
-        productCategoryList.categoryId = createCategory.id;
-        await queryRunner.manager
-          .getRepository(Product_category_list)
-          .save(productCategoryList);
-      } else {
-        const productCategoryList = new Product_category_list();
-        productCategoryList.productId = createProduct.id;
-        productCategoryList.categoryId = existCategory.id;
-        await queryRunner.manager
-          .getRepository(Product_category_list)
-          .save(productCategoryList);
-      }
+
+      await queryRunner.manager.getRepository(Product).save(product);
       await queryRunner.commitTransaction();
       return {
         author: this.author,
@@ -119,8 +84,6 @@ export class ProductService {
         flowerLanguage: this.flowerLanguage,
         quantityMax: this.quantityMax,
         quantityNow: this.quantityNow,
-        categoryName: this.categoryName,
-        categoryContent: this.categoryContent,
         imagePath: filesNames,
       };
     } catch (err) {

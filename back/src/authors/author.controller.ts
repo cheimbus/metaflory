@@ -28,6 +28,7 @@ export class AuthorController {
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() data: AuthorSetInfoDto,
   ): Promise<any> {
+    console.log(files);
     return await this.authorService.setAuthorInfo(files, data.name);
   }
 
