@@ -31,10 +31,13 @@ export class AdminsController {
 
   @UseGuards(AdminAuthGuard)
   @Post('logout')
-  async logoutAdmin(@Res() res: Response, @User() user: number) {
+  async logoutAdmin(
+    @Res({ passthrough: true }) res: Response,
+    @User() user: number,
+  ) {
     await this.adminService.logoutAdmin(user);
     const { accessTokenCookieOption } =
       await this.adminService.getCookieOptionForLogOut();
-    res.cookie('Authorization', '', accessTokenCookieOption);
+    return res.cookie('Authorization', '', accessTokenCookieOption);
   }
 }

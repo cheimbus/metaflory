@@ -1,17 +1,10 @@
 import { HttpService } from '@nestjs/axios';
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Post,
-  Query,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { User } from 'src/common/decorators/user.request.decorator';
+import { JwtAccessTokenAuthGuard } from 'src/jwt/jwt.access.guard';
 import { jwtRefreshTokenAuthGuard } from 'src/jwt/jwt.refresh.guard';
 import { KakaoService, UserService } from './user.service';
 
@@ -22,7 +15,6 @@ export class UserController {
     private readonly kakaoService: KakaoService,
     private configService: ConfigService,
     private userService: UserService,
-    private httpService: HttpService,
   ) {}
 
   @Get('kakaologin')
@@ -60,11 +52,6 @@ export class UserController {
     await this.userService.createServerId(userId, refreshToken);
     await this.userService.setUserInfo(name, email, gender, birthday);
     await this.userService.setRefreshToken();
-    // const mypage = `${
-    //   this.configService.get('TEST') === 'true'
-    //     ? this.configService.get('TEST_COMMON_PATH')
-    //     : this.configService.get('COMMON_PATH')
-    // }mypage`;
     res.cookie('Authorization', accessToken, accessTokenCookieOption);
     res.cookie('RefreshToken', refreshToken, refreshTokenCookieOption);
     return {
@@ -98,7 +85,7 @@ export class UserController {
     await this.kakaoService.logout();
     res.cookie('Authorization', '', accessTokenCookieOption);
     res.cookie('RefreshToken', '', refreshTokenCookieOption);
-    return res.status(HttpStatus.OK).send();
+    return;
   }
 
   // 사용자 카톡까지 로그아웃시킴 나중에 사용되면 그때 사용함
@@ -107,9 +94,9 @@ export class UserController {
     return await this.kakaoService.deleteLog();
   }
 
+  @UseGuards(JwtAccessTokenAuthGuard)
   @Get('token-validation')
   async userTokenValidation(): Promise<any> {
-    const { accessToken } = await this.userService.getTokensAndOptions();
-    return await this.userService.userTokenValidation(accessToken);
+    return;
   }
 }
