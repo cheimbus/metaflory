@@ -23,7 +23,7 @@ export class AuthorController {
   // 작가 정보, 대표이미지 생성 및 수정
   @UseGuards(AdminAuthGuard)
   @Post('authors')
-  @UseInterceptors(FilesInterceptor('image', null, multerOptions('product')))
+  @UseInterceptors(FilesInterceptor('image', null, multerOptions()))
   async setAuthorInfo(
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() data: AuthorSetInfoDto,

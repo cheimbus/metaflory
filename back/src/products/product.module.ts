@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entitis/User';
 import { Product } from 'src/entitis/Product';
 import { AdminAuthStrategy } from 'src/jwt/admin.strategy';
+import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { Admin } from 'src/entitis/Admin';
@@ -25,10 +26,17 @@ import { ProductAuthor } from 'src/entitis/Product.author';
       ProductAuthor,
     ]),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../uploads', 'product'),
+      rootPath: join(__dirname, '../../..', 'uploads'),
       serveStaticOptions: {
         dotfiles: 'allow',
       },
+    }),
+    MulterModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        dest: configService.get<string>('MULTER_DEST'),
+      }),
+      inject: [ConfigService],
     }),
   ],
   providers: [ProductService, AdminAuthStrategy],
