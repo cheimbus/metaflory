@@ -27,7 +27,7 @@ export class ProductController {
   // 상품 생성 (관리자)
   @UseGuards(AdminAuthGuard)
   @Post('admin')
-  @UseInterceptors(FilesInterceptor('image', null, multerOptions()))
+  @UseInterceptors(FilesInterceptor('image', null, multerOptions('product')))
   // @Bind(UploadedFiles()) // 이렇게 데코레이터를 대신해서 사용할 수 있음
   async createProduct(
     @UploadedFiles() files: Array<Express.Multer.File>,
@@ -59,7 +59,7 @@ export class ProductController {
 
   // 상품 수정 (관리자)
   @UseGuards(AdminAuthGuard)
-  @UseInterceptors(FilesInterceptor('image', null, multerOptions()))
+  @UseInterceptors(FilesInterceptor('image', null, multerOptions('product')))
   @Post(':name/admin/mo')
   async modifyProduct(
     @UploadedFiles() files: Array<Express.Multer.File>,
