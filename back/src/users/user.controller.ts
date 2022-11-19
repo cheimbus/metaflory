@@ -106,4 +106,10 @@ export class UserController {
   async kakaoLogDelete() {
     return await this.kakaoService.deleteLog();
   }
+
+  @Get('token-validation')
+  async userTokenValidation(): Promise<any> {
+    const { accessToken } = await this.userService.getTokensAndOptions();
+    return await this.userService.userTokenValidation(accessToken);
+  }
 }

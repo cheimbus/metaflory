@@ -15,12 +15,10 @@ export class AdminsService {
     private jwtService: JwtService,
   ) {}
   async createAdmin(email: string, password: string): Promise<any> {
-    const queryRunner = await dataSource.createQueryRunner();
+    const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    const exist = await queryRunner.manager
-      .getRepository(Admin)
-      .find({ where: { id: 1 } });
+    const exist = await queryRunner.manager.getRepository(Admin).find();
     if (exist.length > 0) {
       throw new BadRequestException('더 이상 생성할 수 없습니다.');
     }
@@ -41,12 +39,7 @@ export class AdminsService {
   }
 
   async loginAdmin(email: string, password: string) {
-    const queryRunner = await dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    const exist = await queryRunner.manager
-      .getRepository(Admin)
-      .find({ where: { id: 1 } });
+    const exist = await dataSource.manager.getRepository(Admin).find();
     const isEmail = await bcrypt.compare(email, exist[0].email);
     const isPassword = await bcrypt.compare(password, exist[0].password);
     if (!isEmail || !isPassword) {
@@ -55,7 +48,7 @@ export class AdminsService {
     const payload = {
       id: exist[0].id,
     };
-    const accessToken = await this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload);
     const accessTokenCookieOption = {
       domain: this.configService.get('COOKIE_OPTION_DOMAIN'),
       path: this.configService.get('COOKIE_OPTION_PATH'),
@@ -66,25 +59,13 @@ export class AdminsService {
   }
 
   async logoutAdmin(id: number) {
-    const queryRunner = await dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    try {
-      const exist = await queryRunner.manager
-        .getRepository(Admin)
-        .createQueryBuilder()
-        .where('id=:id', { id })
-        .getOne();
-      if (!exist) {
-        throw new UnauthorizedException('잘못된 접근입니다.');
-      }
-      await queryRunner.commitTransaction();
-      return '로그아웃 완료';
-    } catch (err) {
-      console.log(err);
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
+    const exist = await dataSource.manager
+      .getRepository(Admin)
+      .createQueryBuilder()
+      .where('id=:id', { id })
+      .getOne();
+    if (!exist) {
+      throw new UnauthorizedException('잘못된 접근입니다.');
     }
   }
 

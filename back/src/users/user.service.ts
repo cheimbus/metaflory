@@ -201,8 +201,13 @@ export class UserService {
     this.gender = gender;
     this.birthday = birtday;
   }
+
+  async userTokenValidation(): Promise<any> {
+    const existToken = await this.jwtService;
+  }
 }
 
+// 카카오 로그인
 @Injectable()
 export class KakaoService {
   accessToken: string;
