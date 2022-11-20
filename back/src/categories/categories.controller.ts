@@ -8,10 +8,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 import { CreateCategoryDto } from 'src/common/dto/create.category.dto';
 import { AdminAuthGuard } from 'src/jwt/admin.gurad';
 import { CategoriesService } from './categories.service';
 
+@ApiTags('카테고리')
 @Controller()
 export class CategoriesController {
   constructor(private categoryService: CategoriesService) {}

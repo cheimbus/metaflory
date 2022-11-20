@@ -6,10 +6,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 import { PurchaseListDto } from 'src/common/dto/purchase.list.dto';
 import { AdminAuthGuard } from 'src/jwt/admin.gurad';
 import { PurchaseService } from './purchase.service';
 
+@ApiTags('구매')
 @Controller()
 export class PurchaseController {
   constructor(readonly purchaseService: PurchaseService) {}
