@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -33,7 +33,7 @@ export class UserPurchaseList {
   price: number;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   @ApiProperty({
     example: '카드, 메타마스크',
     description: '구매 유형',

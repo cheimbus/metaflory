@@ -164,6 +164,7 @@ export class ProductService {
         imagePath: `${parsedImage[0]}`,
         name: getProductInfos[i].name,
         price: getProductInfos[i].price,
+        category: getProductInfos[i].category,
         isSoldout: getProductInfos[i].isSoldout,
       });
     }
@@ -413,6 +414,7 @@ export class ProductService {
         imagePath: parsedImagePath[0],
         name: getProductInfos[i].name,
         price: getProductInfos[i].price,
+        category: getProductInfos[i].category,
         isSoldout: getProductInfos[i].isSoldout,
       });
     }

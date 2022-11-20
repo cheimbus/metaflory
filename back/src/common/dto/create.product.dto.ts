@@ -1,5 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString, ValidateIf } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Product } from 'src/entitis/Product';
 
 export class CreateProductDto extends PickType(Product, [
@@ -7,8 +8,7 @@ export class CreateProductDto extends PickType(Product, [
   'content',
   'flowerLanguage',
 ] as const) {
-  @ValidateIf((object, value) => typeof value !== typeof String(value))
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
   @ApiProperty({
     example: 'siu',
@@ -16,7 +16,7 @@ export class CreateProductDto extends PickType(Product, [
   })
   author: string;
 
-  @ValidateIf((object, value) => typeof value !== typeof String(value))
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
@@ -24,11 +24,10 @@ export class CreateProductDto extends PickType(Product, [
     description: '가격',
     required: true,
   })
-  price: string;
+  price: number;
 
-  @ValidateIf((object, value) => typeof value !== typeof String(value))
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   @ApiProperty({
     example: 10,
     description: '총 수량. 즉, 총 10개 판매가능',

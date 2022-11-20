@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, ValidateIf } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateCategoryDto {
-  @ValidateIf((object, value) => typeof value !== typeof String(value))
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -12,7 +11,6 @@ export class CreateCategoryDto {
   })
   name: string;
 
-  @ValidateIf((object, value) => typeof value !== typeof String(value))
   @IsString()
   @IsNotEmpty()
   @ApiProperty({

@@ -28,6 +28,7 @@ import { AuthorModule } from './authors/author.module';
 import { MainModule } from './main/main.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductAuthor } from './entitis/Product.author';
+import { SendListsModule } from './send-lists/send-lists.module';
 
 @Module({
   imports: [
@@ -91,6 +92,7 @@ import { ProductAuthor } from './entitis/Product.author';
     AuthorModule,
     MainModule,
     CategoriesModule,
+    SendListsModule,
   ],
   controllers: [RoungeController],
   providers: [RoungeService],
