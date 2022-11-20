@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { MainService } from './main.service';
 
@@ -12,22 +12,30 @@ export class MainController {
    * 조회수에 따라서 순서 정함 3가지만 불러오기
    * 각각 작가의 작품들이 나열된 상품들 불러오는 uri도 보내주여 함
    */
-  @Get('author/list')
+  @Get('authors')
   async getAuthorListForMain(): Promise<any> {
     return await this.mainService.getAuthorListForMain();
   }
 
   /**
-   * 메인페이지 꽃 선물카드
+   * 메인페이지 꽃 선물카드, nft 꽃
    * 최신 상품 3개를 골라서 나열
    */
-  // @Get('present/list')
-  // async getPresentListForMain(): Promise<any> {
-  //   return await this.mainService.getPresentListForMain();
-  // }
+  @Get('product/:category/new')
+  async getNewProductListForMain(
+    @Param('category') category: string,
+  ): Promise<any> {
+    return await this.mainService.getNewProductListForMain(category);
+  }
 
   /**
-   * 메인페이지 꽃 nft
+   * 메인페이지 꽃 선물카드, nft 꽃
    * 조회수가 높은 3개를 골라서 나열
    */
+  @Get('product/:category/popular')
+  async getPopularProductListForMain(
+    @Param('category') category: string,
+  ): Promise<any> {
+    return await this.mainService.getPopularProductListForMain(category);
+  }
 }

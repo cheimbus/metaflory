@@ -41,7 +41,10 @@ export class AuthorController {
     return await this.authorService.getAuthorList();
   }
 
-  // 이건 다음 버전에 넣을 예정
+  /**
+   * 이건 다음 버전에 넣을 예정
+   * 작가의 상품 목록
+   */
   @Get('author/:name/products')
   async getAuthorProduct(@Param('name') name: string) {
     return await this.authorService.getAuthorProducts(name);

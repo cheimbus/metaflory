@@ -46,10 +46,10 @@ export class ProductService {
     const stringifiedImagePath = JSON.stringify(filesNames);
     this.author = data.data.author;
     this.name = data.data.name;
-    this.price = data.data.price;
+    this.price = parseInt(data.data.price);
     this.content = data.data.content;
     this.flowerLanguage = data.data.flowerLanguage;
-    this.quantityMax = data.data.quantityMax;
+    this.quantityMax = parseInt(data.data.quantityMax);
     this.imagePath = stringifiedImagePath;
     this.category = data.data.category;
     const exist = await dataSource

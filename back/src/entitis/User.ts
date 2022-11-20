@@ -86,7 +86,7 @@ export class User {
 
   @OneToMany(
     () => UserPurchaseList,
-    (userPurchaseList) => userPurchaseList.userId,
+    (userPurchaseList) => userPurchaseList.UserId,
   )
   userPurchaseList: UserPurchaseList;
 

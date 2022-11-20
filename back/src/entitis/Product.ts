@@ -175,7 +175,7 @@ export class Product {
 
   @OneToMany(
     () => UserPurchaseList,
-    (userPurchaseList) => userPurchaseList.productId,
+    (userPurchaseList) => userPurchaseList.ProductId,
   )
   userPurchaseList: UserPurchaseList[];
 

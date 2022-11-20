@@ -22,6 +22,12 @@ export class UserPurchaseList {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
+  @Column('int', { name: 'user_id', nullable: true })
+  userId: number | null;
+
+  @Column('int', { name: 'product_id', nullable: true })
+  productId: number | null;
+
   @IsNotEmpty()
   @IsNumber()
   @ApiProperty({
@@ -50,14 +56,14 @@ export class UserPurchaseList {
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'product_id', referencedColumnName: 'id' }])
-  productId: number;
+  ProductId: Product[];
 
   @ManyToOne(() => User, (user) => user.userPurchaseList, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   @JoinColumn([{ name: 'user_id', referencedColumnName: 'id' }])
-  userId: number;
+  UserId: number;
 
   @OneToMany(() => UserSendList, (userSendList) => userSendList.purchaseListId)
   userSendList: UserSendList[];

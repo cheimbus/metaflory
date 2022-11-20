@@ -16,6 +16,7 @@ export class PurchaseController {
   /**
    * 사용자가 구매를 완료하면 해당 id를 요청받아 상품 수량, soldout여부
    */
+  //   @UseGuards(AdminAuthGuard)
   @UseInterceptors(FilesInterceptor(''))
   @Post('purchase')
   async purchaseProduct(@Body() data: PurchaseListDto): Promise<any> {
