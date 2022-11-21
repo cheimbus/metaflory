@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { UserProvider } from './context/User';
+import './css/font/pretendard/pretendard.css';
 import './index.css';  
+
 import reportWebVitals from './reportWebVitals'; 
 import PageRouter from './router/PageRouter';  
 

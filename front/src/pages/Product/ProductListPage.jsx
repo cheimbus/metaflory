@@ -17,10 +17,9 @@ export default function ProductListPage(){
             queryKey:['products'],
             queryFn: loadProductList,  
             onSuccess: data=>{
-                const width = getWindowSize().innerWidth;
-                
+                const width = getWindowSize().innerWidth; 
                 settingFlowers(data, width); 
-            }
+            },
         }
     )
 
@@ -51,31 +50,30 @@ export default function ProductListPage(){
          * 600이상 2개
          * 나머지1개
          */
-        if(width>=900 && length%3>0){
-            for(let i=0;i<3-length%3;i++){
-                items.push({empty:true});
+        if(width>=900){
+            if(length%3>0){
+                for(let i=0;i<3-length%3;i++){
+                    items.push({empty:true});
+                }
             }
-        } else if(width>=600 && length%2>0){
-            for(let i=0;i<2-length%2;i++){
-                items.push({empty:true});
+        } else if(width>=600){
+            if(length%2>0){
+                for(let i=0;i<2-length%2;i++){
+                    items.push({empty:true});
+                }
             }
         }
-
-        console.log("before",items);
+ 
         //top이냐 bottom이냐 미들이냐 따라 적용할 라인이 다름
         const itemLength = items.length;
         for(let i=0;i<itemLength;i++){
             items[i].line = calcLineInfo(i+1,itemLength, width);
-        }
-        console.log("after", items);
-
-        console.log("Items Len ",items.length, "Origin Len ",length);
+        } 
         setFlowers(items);
     }
 
-    function calcLineInfo(index, length, width){
-        console.log("CalcLineInfo",index,length,width);
-        if(width>=600){
+    function calcLineInfo(index, length, width){ 
+        if(width>=900){
             if(length<=3){ 
                 if(index%3==1 || index%3==0){
                     return {l:true, r:true}
@@ -103,7 +101,7 @@ export default function ProductListPage(){
                 }
             } else{
                 //맨아래
-                if(index>=length%3==0?length-2:length-(length%3-1)){
+                if(index>=(length%3==0?length-2:length-(length%3-1))){
                     if(index%3==1){
                         return {l:true, r:true};
                     } else if(index%3==0){
@@ -166,9 +164,10 @@ export default function ProductListPage(){
  
      
     return(
-        <div className="products">
-            <h1>Flowers</h1>
-            <div>width : {windowSize.innerWidth}, height : {windowSize.innerHeight}</div>
+        <div className="productsPage">
+            <h1>Flowers
+                <div className="line_b"></div>
+            </h1> 
             {isLoading && <div>제품목록 로드중</div>}
             {error && <div>제품목록 조회 에러</div>}
             {flowers && (
@@ -176,7 +175,7 @@ export default function ProductListPage(){
                     { 
                     flowers.map((product)=>(
                             
-                        <Product line={product.line} empty={product.empty} key={product.viewUri} name={product.name} soldout={product.isSoldout} price={product.price} thumbnail={product.imagePath} viewUri={product.viewUri}/>
+                        <Product line={product.line} empty={product.empty} key={product.id} name={product.name} soldout={product.isSoldout} price={product.price} thumbnail={product.imagePath} category={product.category}/>
                             
                     ))}
                 </div>

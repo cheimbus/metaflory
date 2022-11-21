@@ -6,8 +6,7 @@ export function GET({url, header, params, token}){
     if(token){
         _header.Authorization = 'Bearer '+token;
     }
-
-    console.log("header , ",_header);
+ 
     return axios({
         url : url,
         method:'GET',
@@ -15,8 +14,7 @@ export function GET({url, header, params, token}){
         params : params
     }).then((res)=>{
         return Promise.resolve(res);
-    }).catch((err)=>{
-        console.log("HTTP GET ERR",err);
+    }).catch((err)=>{ 
         return Promise.reject(err);
     })
 
@@ -26,9 +24,7 @@ export function POST({url, header, body, token}){
     let _header = {...header};
     if(token){
         _header.Authorization = 'Bearer '+token;
-    }
-
-    console.log("header , ",_header);
+    } 
     return axios({
         url : url,
         method:'POST',
@@ -36,8 +32,7 @@ export function POST({url, header, body, token}){
         data : body
     }).then((res)=>{
         return Promise.resolve(res);
-    }).catch((err)=>{
-        console.log("HTTP GET ERR",err);
+    }).catch((err)=>{ 
         return Promise.reject(err);
     })
 

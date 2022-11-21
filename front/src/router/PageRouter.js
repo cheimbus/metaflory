@@ -14,6 +14,7 @@ import MessageReceivePage from "../pages/Gift/MessageRecievePage";
 import MyGrassPage from "../pages/Landing/MyGrassPage";
 import AdmLoginPage from "../pages/Admin/LoginPage"; 
 import { AdmProductsListPage } from "../pages/Admin/ProductListPage";
+import { AboutPage } from "../pages/About/AboutPage";
 
 
 
@@ -29,9 +30,10 @@ export default function PageRouter(){
                 {path:'/login',element:<LoginPage/>}, 
                 {path:'/login/kakao',element:<LoginPage thirdparty='kakao'/>}, 
                 {path:'/products',element:<ProductListPage/>},
-                {path:'/products/:productId',element:<ProductViewPage/>},
+                {path:'/products/:productName',element:<ProductViewPage/>},
                 {path:'/gift',element:<MessageReceivePage/>},
                 {path:'/grass',element:<MyGrassPage/>} ,
+                {path:'/about',element:<AboutPage/>},
                 {path:'/adm/login',element:<AdmLoginPage/>},
                 {path:'/adm/products',element:<AdmProductsListPage/>},
             ]
