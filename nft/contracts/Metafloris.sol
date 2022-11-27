@@ -1155,5 +1155,19 @@ contract Metafloris is ERC721 {
     function getHoldTimeMap(uint256 tokenId) public view returns (uint256){
         return holdTimeMap[tokenId]; 
     } 
+
+    function airdropNFT(uint256 flowerType, address to) public onlyOwner {
+        require(flowerType < _flowerTypeCnt , "It is not exist flower Type");   
+        require(_productSellStateMap[flowerType].add(1) <= _productsMap[flowerType]._maxAmount, "Exceed max amount");  
+
+        uint256 tokenId = _mintNowIndex;
+        _mintNowIndex = _mintNowIndex.add(1); 
+        _safeMint(to, tokenId);  
+
+        _tokenIdAndFlowerTypeMap[tokenId] = flowerType;
+        _productSellStateMap[flowerType] = _productSellStateMap[flowerType].add(1); 
+        _lastCallBlockNumber[msg.sender] = block.number;
+        changeHoldTime(tokenId);
+    }
 }
 
