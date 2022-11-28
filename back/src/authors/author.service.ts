@@ -1,12 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import dataSource from 'datasource';
 import { ProductAuthor } from 'src/entitis/Product.author';
 
 @Injectable()
 export class AuthorService {
-  constructor(private configService: ConfigService) {}
-
   async setAuthorInfo(
     files: Express.Multer.File[],
     data: string,
@@ -14,19 +11,13 @@ export class AuthorService {
     const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    const imagePath = `${
-      this.configService.get('TEST') === 'true'
-        ? this.configService.get('TEST_COMMON_PATH')
-        : this.configService.get('COMMON_PATH')
-    }${files[0].filename}`;
+    const imagePath = files[0].filename;
     const exist = await queryRunner.manager
       .getRepository(ProductAuthor)
       .createQueryBuilder('author')
       .where('author.name=:name', { name: data })
       .getOne();
-    if (exist) {
-      throw new BadRequestException('이미 생성되었습니다.');
-    }
+    if (exist) throw new BadRequestException('이미 생성되었습니다.');
     try {
       const author = new ProductAuthor();
       author.name = data;
@@ -45,10 +36,6 @@ export class AuthorService {
     }
   }
 
-  /**
-   * 작가 조회수에 따라 순위 매김
-   * 해당 작가를 클릭하면 작가의 상품들을 나열 해 놓아야 함
-   */
   async getAuthorList(): Promise<any> {
     const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();

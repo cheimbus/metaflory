@@ -2,9 +2,6 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { UserModule } from './users/user.module';
 import { ProductModule } from './products/product.module';
-import { RoungeController } from './rounges/rounge.controller';
-import { RoungeService } from './rounges/rounge.service';
-import { RoungeModule } from './rounges/rounge.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entitis/User';
 import { Product } from './entitis/Product';
@@ -26,8 +23,6 @@ import { AuthorModule } from './authors/author.module';
 import { MainModule } from './main/main.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductAuthor } from './entitis/Product.author';
-import { SendListsModule } from './send-lists/send-lists.module';
-import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -84,16 +79,14 @@ import { AppController } from './app.controller';
     HttpModule,
     UserModule,
     ProductModule,
-    RoungeModule,
     AdminsModule,
     MypageModule,
     PurchaseModule,
     AuthorModule,
     MainModule,
     CategoriesModule,
-    SendListsModule,
   ],
-  controllers: [RoungeController, AppController],
-  providers: [RoungeService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

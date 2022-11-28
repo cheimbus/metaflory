@@ -20,7 +20,7 @@ export class MypageService {
     this.accountStatus = '';
     this.purchaseType = '';
   }
-  // 유저 정보 가져오기
+
   async getUserInfo(userId: number): Promise<any> {
     const userInfo = await dataSource
       .getRepository(User)

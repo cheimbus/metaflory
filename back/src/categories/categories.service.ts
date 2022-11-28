@@ -1,11 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import dataSource from 'datasource';
 import { Category } from 'src/entitis/Category';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private configService: ConfigService) {}
   async createCategory(data): Promise<any> {
     const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -31,26 +29,6 @@ export class CategoriesService {
     } finally {
       await queryRunner.release();
     }
-  }
-
-  async getCategoryList(): Promise<any> {
-    const categories = await dataSource
-      .getRepository(Category)
-      .createQueryBuilder()
-      .getMany();
-    const categoryList = [];
-    for (let i = 0; i < categories.length; i++) {
-      categoryList.push({
-        name: categories[i].name,
-        content: categories[i].content,
-        modifyCategoryUri: `${
-          this.configService.get('TEST') === 'true'
-            ? this.configService.get('TEST_COMMON_PATH')
-            : this.configService.get('COMMON_PATH')
-        }category/${categories[i].name}/mo`,
-      });
-    }
-    return categoryList;
   }
 
   async modifyCategory(data, name: string): Promise<any> {

@@ -46,7 +46,6 @@ export class UserService {
     const exist = await this.userTokenListRepository.findOne({
       where: { userId: this.userId, type: this.type },
     });
-    // 유저가 존재한다면 리프레쉬토큰을 업데이트를 해줘야함
     if (exist) {
       try {
         const hashedRefresh = await bcrypt.hash(this.refreshToken, 12);
@@ -189,7 +188,6 @@ export class UserService {
     };
   }
 
-  // kakao에서 받아온 user정보를 저장
   async setUserInfo(
     name: string,
     email: string,
@@ -203,7 +201,6 @@ export class UserService {
   }
 }
 
-// 카카오 로그인
 @Injectable()
 export class KakaoService {
   accessToken: string;
@@ -258,7 +255,6 @@ export class KakaoService {
         accountStatus: this.accountStatus,
       })
       .getOne();
-    // 이메일이 존재한다면 리프레쉬토큰을 업데이트를 해줘야함
     if (exist) {
       this.userId = exist.id;
       try {
@@ -302,7 +298,6 @@ export class KakaoService {
     }
   }
 
-  // 유저 정보 가져오기
   async getUserInfo(): Promise<any> {
     const { name, email, gender, birthday, userId, kakaoAccessToken } = {
       name: this.name,
@@ -325,7 +320,6 @@ export class KakaoService {
       .execute();
   }
 
-  // 토큰 만료 로그아웃
   async logout(): Promise<any> {
     const _url = 'https://kapi.kakao.com/v1/user/logout';
     const _header = {
@@ -336,7 +330,7 @@ export class KakaoService {
       this.httpService.post(_url, '', { headers: _header }),
     );
   }
-  // 로그 삭제 및 로그아웃
+
   async deleteLog(): Promise<any> {
     const _url = 'https://kapi.kakao.com/v1/user/unlink';
     const _header = {
@@ -346,7 +340,7 @@ export class KakaoService {
       this.httpService.post(_url, '', { headers: _header }),
     );
   }
-  // 토큰 다시 발급
+
   async getAccessToken(): Promise<any> {
     const queryRunner = await dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -366,20 +360,6 @@ export class KakaoService {
           return data;
         }
       });
-
-      /**
-       * find를 해서 relation된 값을 가져오는 방법인데 이건 코드가 복잡해져서 쿼리빌더를 사용
-       */
-
-      // const userId = await dataSource.manager.getRepository(User).find({
-      //   where: { id: this.userId },
-      //   relations: { userTokenList: true },
-      // });
-      // if (userId.userTokenList[0].type !== 1) {
-      //   throw new UnauthorizedException('접근할 수 없습니다.');
-      // }
-      // const currentRefresh = userId.userTokenList[0].refreshToken;
-
       const compareRefresh = await bcrypt.compare(
         this.refreshToken,
         findCurrentRefresh[0].refreshToken,

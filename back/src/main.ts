@@ -9,14 +9,15 @@ import {
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/http-exception.filter';
 import { successInterceptor } from './common/success.interceptor';
-import { TimeoutInterceptor } from './common/timeout.intercepotr';
+import { TimeoutInterceptor } from './common/timeout.interceptor';
 
 declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get<ConfigService>(ConfigService);
-  app.enableCors(); //실섭에선 url같을테니 빼기
+  // 실서버에서는 cors를 삭제함
+  app.enableCors();
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new successInterceptor());
   app.useGlobalInterceptors(new TimeoutInterceptor());
@@ -26,7 +27,7 @@ async function bootstrap() {
       persistAuthorization: true,
     },
   };
-  // 버전 바뀔때마다 바꿔줘야함
+
   const config = new DocumentBuilder()
     .setTitle('metafloris API')
     .setDescription('메타플로리스 API')
@@ -43,7 +44,7 @@ async function bootstrap() {
     .build();
 
   /**
-   * swagger 사용할 때 사용자, 비밀번호 입력할 때 작성
+   * @description swagger를 암호화하기 위해 작성합니다.
    */
   // app.use(
   //   [configService.get('SWAGGER_PATH')],

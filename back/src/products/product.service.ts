@@ -6,9 +6,6 @@ import { Product } from 'src/entitis/Product';
 import { ProductAuthor } from 'src/entitis/Product.author';
 import { ProductCategoryList } from 'src/entitis/Product.category.list';
 
-/**
- * 사용자에게만 보여줄 상품정보, 관리자에게만 보여줄 상품정보 나눠서 개발
- */
 @Injectable()
 export class ProductService {
   author: string;
@@ -107,7 +104,6 @@ export class ProductService {
     }
   }
 
-  // 상품 뷰 (관리자)
   async getOneProductToAdmin(name: string) {
     const productInfo = await dataSource.manager
       .getRepository(Product)
@@ -139,8 +135,6 @@ export class ProductService {
     };
   }
 
-  // 상품 목록(관리자)
-  // 첫번째 등록한 이미지가 대표이미지가 됨
   async getAllProductToAdmin() {
     const getProductInfos = await dataSource.manager
       .getRepository(Product)
@@ -165,7 +159,6 @@ export class ProductService {
     return productInfos;
   }
 
-  // 상품 수정하기 전 원래있던 내용 가져오기 (관리자)
   async getProductInfoBeforeModify(_name: string) {
     const {
       author,
@@ -198,7 +191,6 @@ export class ProductService {
     };
   }
 
-  // 상품 수정 (관리자)
   async modifyProductInfo(
     data,
     files: Express.Multer.File[],
@@ -275,7 +267,6 @@ export class ProductService {
     }
   }
 
-  // 상품 삭제 soft delete (관리자)
   async deleteProduct(_name: string): Promise<any> {
     const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -311,7 +302,6 @@ export class ProductService {
     }
   }
 
-  // 상품 복구 (관리자)
   async restoreProduct(_name: string): Promise<any> {
     const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -338,7 +328,6 @@ export class ProductService {
     }
   }
 
-  // 상품 뷰 (사용자)
   async getOneProductForUser(name: string): Promise<any> {
     const queryRunner = dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -390,7 +379,6 @@ export class ProductService {
     }
   }
 
-  // 상품 목록 (사용자)
   async getAllProductForuser(): Promise<any> {
     const getProductInfos = await dataSource.manager
       .getRepository(Product)

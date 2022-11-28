@@ -19,9 +19,8 @@ export class AdminsService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     const exist = await queryRunner.manager.getRepository(Admin).find();
-    if (exist.length > 0) {
+    if (exist.length > 0)
       throw new BadRequestException('더 이상 생성할 수 없습니다.');
-    }
     try {
       const hashedEmail = await bcrypt.hash(email, 12);
       const hashedPassword = await bcrypt.hash(password, 12);
@@ -42,9 +41,8 @@ export class AdminsService {
     const exist = await dataSource.manager.getRepository(Admin).find();
     const isEmail = await bcrypt.compare(email, exist[0].email);
     const isPassword = await bcrypt.compare(password, exist[0].password);
-    if (!isEmail || !isPassword) {
+    if (!isEmail || !isPassword)
       throw new UnauthorizedException('잘못된 정보입니다.');
-    }
     const payload = {
       id: exist[0].id,
     };
