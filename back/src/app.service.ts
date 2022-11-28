@@ -1,20 +1,20 @@
-// import { HttpService } from '@nestjs/axios';
-// import { Injectable } from '@nestjs/common';
-// import { firstValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { Injectable } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
 
-// @Injectable()
-// export class MyService {
-//   data: string;
+@Injectable()
+export class MyService {
+  data: string;
 
-//   getData(): string {
-//     return this.data;
-//   }
+  getData(): string {
+    return this.data;
+  }
 
-//   setData(data: string): void {
-//     this.data = data;
-//     return;
-//   }
-// }
+  setData(data: string): void {
+    this.data = data;
+    return;
+  }
+}
 
 // @Injectable()
 // export class KakaoLogin {

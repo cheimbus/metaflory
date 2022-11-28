@@ -34,13 +34,7 @@ export class ProductService {
   async createProduct(data, files: Express.Multer.File[]): Promise<any> {
     const filesNames = [];
     for (let i = 0; i < files.length; i++) {
-      filesNames.push(
-        `${
-          this.configService.get('TEST') === 'true'
-            ? this.configService.get('TEST_COMMON_PATH')
-            : this.configService.get('COMMON_PATH')
-        }${files[i].filename}`,
-      );
+      filesNames.push(files[i].filename);
     }
     // db에서 꺼내서 사용할 때는 JSON.parse를 해준다.
     const stringifiedImagePath = JSON.stringify(filesNames);

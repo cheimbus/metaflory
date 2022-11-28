@@ -38,7 +38,6 @@ export class UserController {
         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
     };
-    // 카카오 로그인할 때 문제가 발생
     await this.kakaoService.login(_uri, _header);
     const { name, email, gender, birthday, userId } =
       await this.kakaoService.getUserInfo();

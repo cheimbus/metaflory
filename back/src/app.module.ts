@@ -1,7 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-// import { AppController } from './app.controller';
-// import { KakaoLogin, MyService } from './app.service';
 import { UserModule } from './users/user.module';
 import { ProductModule } from './products/product.module';
 import { RoungeController } from './rounges/rounge.controller';
@@ -29,6 +27,7 @@ import { MainModule } from './main/main.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductAuthor } from './entitis/Product.author';
 import { SendListsModule } from './send-lists/send-lists.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -94,7 +93,7 @@ import { SendListsModule } from './send-lists/send-lists.module';
     CategoriesModule,
     SendListsModule,
   ],
-  controllers: [RoungeController],
+  controllers: [RoungeController, AppController],
   providers: [RoungeService],
 })
 export class AppModule {}
