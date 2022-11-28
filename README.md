@@ -12,21 +12,37 @@
   - `npm v8.15.0`
   - `TypeORM v0.39`
 ## 4. 데이터베이스 다이어그램
-<img width="1035" alt="스크린샷 2022-11-29 오전 12 08 45" src="https://user-images.githubusercontent.com/87293880/204312406-fd836fe9-5d21-4c67-89e1-1aeb52f249fd.png">    
-## 5. 실제 웹 페이지    
-- 메인 페이지 배너
+<img width="1035" height="900" alt="스크린샷 2022-11-29 오전 12 08 45" src="https://user-images.githubusercontent.com/87293880/204312406-fd836fe9-5d21-4c67-89e1-1aeb52f249fd.png">    
+
+## 5. 웹 페이지
+> 메인 페이지 배너
 <img width="1035" alt="스크린샷 2022-11-29 오전 12 14 02" src="https://user-images.githubusercontent.com/87293880/204317763-eb9bc3a0-4ff5-441c-ba5f-c1193e9cd17f.png">
+
 > 메인 페이지 작가 컬렉션
-<img width="1035" alt="스크린샷 2022-11-29 오전 12 14 17" src="https://user-images.githubusercontent.com/87293880/204317865-747332d9-c707-4bdf-9c5b-00fcf4872031.png">
+<img width="1035" alt="스크린샷 2022-11-29 오전 12 40 55" src="https://user-images.githubusercontent.com/87293880/204319466-f58d88f8-c840-4f80-8346-37497a746cb1.png">
+
 > 메인 페이지 꽃선물카드
 <img width="1035" alt="스크린샷 2022-11-29 오전 12 36 15" src="https://user-images.githubusercontent.com/87293880/204318307-030b77ed-e249-4d52-9ad4-3a78ca9a6968.png">
+
 > 메인 페이지 꽃NFT
 <img width="1035" alt="스크린샷 2022-11-29 오전 12 15 06" src="https://user-images.githubusercontent.com/87293880/204318382-e69737a2-42b6-4fe7-bbb0-9fcec016a332.png">
+
 > 상품 목록
 <img width="1035" alt="스크린샷 2022-11-29 오전 12 15 36" src="https://user-images.githubusercontent.com/87293880/204318484-394d7895-2d68-4e8d-ae62-1db975bbba61.png">
+
 > 소개 페이지
 <img width="1035" alt="스크린샷 2022-11-29 오전 12 15 45" src="https://user-images.githubusercontent.com/87293880/204318552-8cf93020-b5cb-44f6-8102-0acc889ff775.png">
 
+## 6. swagger
+> swagger api문서는 v1/api에서 확인 가능합니다.
 
-- 제한시간이 만료가 되었다면 RefreshToken로 새로 발급합니다.   페이지
-- 제한시간이 만료가 되었다면 RefreshToken로 새로 발급합니다.   
+> 예시
+<img width="1035" alt="스크린샷 2022-11-29 오전 12 47 09" src="https://user-images.githubusercontent.com/87293880/204321173-d2598b83-d078-4b07-8a56-caab19195b02.png">
+<img width="1035" alt="스크린샷 2022-11-29 오전 12 47 41" src="https://user-images.githubusercontent.com/87293880/204321210-e90f66a3-fc8e-4343-80e8-99495b142061.png">
+<img width="1035" alt="스크린샷 2022-11-29 오전 12 47 53" src="https://user-images.githubusercontent.com/87293880/204321241-214044e0-e1a2-4b29-9a96-30cc4db4a764.png">
+
+## 7. 구현목록
+> 대표적으로 구현에 신경쓴 목록입니다.
+- OAuth2.0 카카오 소셜로그인을 이용하여 사용자 로그인 구현
+  - 
+
