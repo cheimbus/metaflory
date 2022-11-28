@@ -33,7 +33,6 @@ export class ProductService {
     for (let i = 0; i < files.length; i++) {
       filesNames.push(files[i].filename);
     }
-    // db에서 꺼내서 사용할 때는 JSON.parse를 해준다.
     const stringifiedImagePath = JSON.stringify(filesNames);
     this.author = data.data.author;
     this.name = data.data.name;
@@ -65,6 +64,7 @@ export class ProductService {
         .createQueryBuilder()
         .where('name=:name', { name: this.category })
         .getOne();
+      console.log(existAuthor);
       const product = new Product();
       product.authorId = existAuthor.id;
       product.category = this.category;
@@ -393,7 +393,11 @@ export class ProductService {
       const parsedImagePath = JSON.parse(getProductInfos[i].imagePath);
       productInfos.push({
         id: getProductInfos[i].id,
-        imagePath: parsedImagePath[0],
+        imagePath: `${
+          this.configService.get('TEST') === 'true'
+            ? this.configService.get('TEST_COMMON_PATH')
+            : this.configService.get('TEST_COMMON_PATH')
+        }${parsedImagePath[0]}`,
         name: getProductInfos[i].name,
         price: getProductInfos[i].price,
         category: getProductInfos[i].category,

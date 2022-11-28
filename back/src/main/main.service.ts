@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import dataSource from 'datasource';
 import { Category } from 'src/entitis/Category';
 import { Product } from 'src/entitis/Product';
@@ -6,6 +7,7 @@ import { ProductAuthor } from 'src/entitis/Product.author';
 
 @Injectable()
 export class MainService {
+  constructor(private configService: ConfigService) {}
   async getAuthorListForMain(): Promise<any> {
     const getAuthorList = await dataSource.manager
       .getRepository(ProductAuthor)
@@ -19,7 +21,11 @@ export class MainService {
       sortedInfo.push({
         id: sorted[i].id,
         name: sorted[i].name,
-        imagePath: sorted[i].imagePath,
+        imagePath: `${
+          this.configService.get('TEST') === 'true'
+            ? this.configService.get('TEST_COMMON_PATH')
+            : this.configService.get('COMMON_PATH')
+        }${sorted[i].imagePath}`,
       });
     }
     const sliceSortedInfo = sortedInfo.slice(0, 3);
@@ -39,7 +45,11 @@ export class MainService {
     for (let i = 0; i < orderByDate[1]; i++) {
       const parsedImage = JSON.parse(orderByDate[0][i].imagePath);
       orderByDateArray.push({
-        imagePath: parsedImage,
+        imagePath: `${
+          this.configService.get('TEST') === 'true'
+            ? this.configService.get('TEST_COMMON_PATH')
+            : this.configService.get('COMMON_PATH')
+        }${parsedImage}`,
         name: orderByDate[0][i].name,
         price: orderByDate[0][i].price,
         category,
@@ -66,7 +76,11 @@ export class MainService {
     for (let i = 0; i < orderByHits[1]; i++) {
       const parsedImage = JSON.parse(orderByHits[0][i].imagePath);
       orderByHitsArray.push({
-        imagePath: parsedImage,
+        imagePath: `${
+          this.configService.get('TEST') === 'true'
+            ? this.configService.get('TEST_COMMON_PATH')
+            : this.configService.get('COMMON_PATH')
+        }${parsedImage}`,
         name: orderByHits[0][i].name,
         price: orderByHits[0][i].price,
         category,

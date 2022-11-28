@@ -39,7 +39,8 @@ export class AdminsController {
   ) {
     const { accessToken, accessTokenCookieOption } =
       await this.adminService.loginAdmin(data.email, data.password);
-    return res.cookie('Authorization', accessToken, accessTokenCookieOption);
+    res.cookie('Authorization', accessToken, accessTokenCookieOption);
+    return { accessToken };
   }
 
   /**

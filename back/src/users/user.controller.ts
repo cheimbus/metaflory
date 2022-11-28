@@ -68,6 +68,7 @@ export class UserController {
     await this.userService.setRefreshToken();
     res.cookie('Authorization', accessToken, accessTokenCookieOption);
     res.cookie('RefreshToken', refreshToken, refreshTokenCookieOption);
+    return { serverAccessToken: accessToken, refreshToken };
   }
 
   /**
