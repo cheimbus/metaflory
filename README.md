@@ -30,6 +30,10 @@
 > 상품 목록
 <img width="1035" alt="스크린샷 2022-11-29 오전 12 15 36" src="https://user-images.githubusercontent.com/87293880/204318484-394d7895-2d68-4e8d-ae62-1db975bbba61.png">
 
+> 상품 뷰
+<img width="1035" alt="스크린샷 2022-11-29 오전 10 44 05" src="https://user-images.githubusercontent.com/87293880/204420422-c74787ef-9ac6-4218-9b17-27474de8c5a4.png">
+
+
 > 소개 페이지
 <img width="1035" alt="스크린샷 2022-11-29 오전 12 15 45" src="https://user-images.githubusercontent.com/87293880/204318552-8cf93020-b5cb-44f6-8102-0acc889ff775.png">
 
