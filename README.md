@@ -84,3 +84,5 @@
   - 이를 이용해서 유효성검사를 하면 한 번 요청이 들어올 때마다 카카오 서버와 계속해서 데이터를 주고받아야 해서 이 부분이 매우 비효율적이라고 생각이 들었습니다.
   - 따라서 소셜로그인을 한 동시에 서버 자체에서 토큰을 발행하는 게 낫겠다고 생각을 하여, 서버 accesstoken, refreshtoken을 각각 발행하여 유효성검사를 하게되었습니다.
  
+## 10. 저작권
+- Copyright 2022 [METAFLORIS](https://github.com/cheimbus) All rights reserved.
