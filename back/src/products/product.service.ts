@@ -369,7 +369,13 @@ export class ProductService {
         flowerLanguage: productInfo.flowerLanguage,
         quantityMax: productInfo.quantityMax,
         quantityNow: productInfo.quantityMax,
-        imagePath: parsedImagePath,
+        imagePath: [
+          `${
+            this.configService.get('TEST') === 'true'
+              ? this.configService.get('TEST_COMMON_PATH')
+              : this.configService.get('COMMON_PATH')
+          }${parsedImagePath}`,
+        ],
       };
     } catch (err) {
       console.log(err);
